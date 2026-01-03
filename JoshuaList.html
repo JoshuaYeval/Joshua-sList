@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joshua’s List - 智能单词本</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        primaryDark: '#4f46e5'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 基础字体：避免强行覆盖 FontAwesome 图标字体 */
+        body,
+        input, button, textarea, select,
+        table {
+            font-family:
+                Consolas,
+                '思源宋体',
+                system-ui, -apple-system,
+                'Segoe UI', Roboto, Helvetica, Arial,
+                sans-serif;
+        }
+
+        code, pre, kbd, samp, tt {
+            font-family:
+                Consolas,
+                Monaco,
+                'Andale Mono',
+                'Ubuntu Mono',
+                monospace;
+        }
+
+        /* 主题变量（参考你给的色调，做了适配） */
+        :root {
+            --jl-primary: #2c2fd4;
+            --jl-primary-dark: #2c2fd4;
+        }
+
+        body[theme-mode="dark"] {
+            --jl-bg: #2B2B2B;
+            --jl-surface: #2D2E2D;
+            --jl-surface-soft: #303030;
+            --jl-card: hsl(60, 2%, 21%);
+            --jl-border: #5E5D5940;
+            --jl-text: hsl(50, 14%, 91%);
+            --jl-muted: hsl(60, 4%, 72%);
+            --jl-input-bg: #3D3D3A;
+
+            --jl-code-bg: #E5E5E20D;
+            --jl-code-text: #EA928A;
+            --jl-pre-code-text: #ABB2BF;
+
+            --jl-chip-bg: #E5E5E20D;
+            --jl-chip-hover: #E5E5E214;
+        }
+
+        body[theme-mode="light"] {
+            --jl-bg: hsl(55, 19%, 89%);
+            --jl-surface: #F8F7F2;
+            --jl-surface-soft: hsl(51, 24%, 95%);
+            --jl-card: hsl(40, 23%, 98%);
+            --jl-border: #87867F40;
+            --jl-text: hsl(49 19.6% 13.3%);
+            --jl-muted: hsl(47, 10%, 40%);
+            --jl-input-bg: #FFFFFF;
+
+            --jl-code-bg: #3D39290D;
+            --jl-code-text: #7C1B13;
+            --jl-pre-code-text: var(--jl-text);
+
+            --jl-chip-bg: #3D39290D;
+            --jl-chip-hover: #3D392914;
+        }
+
+        body {
+            background-color: var(--jl-bg);
+            color: var(--jl-text);
+            transition: background-color 300ms, color 300ms;
+        }
+
+        .jl-surface { background-color: var(--jl-surface); }
+        .jl-surface-soft { background-color: var(--jl-surface-soft); }
+        .jl-card {
+            background-color: var(--jl-card);
+            border: 1px solid var(--jl-border);
+            border-radius: 18px;
+        }
+        .jl-border { border-color: var(--jl-border) !important; }
+        .jl-muted { color: var(--jl-muted) !important; }
+
+        .jl-input {
+            background-color: var(--jl-input-bg) !important;
+            border-color: var(--jl-border) !important;
+            color: var(--jl-text) !important;
+        }
+        .jl-input::placeholder {
+            color: var(--jl-muted) !important;
+            opacity: 0.85;
+        }
+
+        .jl-chip {
+            background-color: var(--jl-chip-bg);
+            color: var(--jl-text);
+        }
+        .jl-chip:hover { background-color: var(--jl-chip-hover); }
+
+        code {
+            background-color: var(--jl-code-bg);
+            color: var(--jl-code-text);
+            padding: 0.1em 0.35em;
+            border-radius: 6px;
+        }
+        pre code { color: var(--jl-pre-code-text); }
+
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
+        .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-20px); }
+
+        .loader {
+            border: 2px solid rgba(255,255,255,0.25);
+            border-top: 2px solid var(--jl-primary);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+
+<body class="transition-colors duration-300">
+    <div id="app" class="min-h-screen flex flex-col transition-colors duration-300">
+
+        <!-- Header -->
+        <header class="jl-surface shadow-sm sticky top-0 z-30 border-b jl-border">
+            <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight leading-tight">Joshua’s List</h1>
+                        <p class="text-xs jl-muted">Personal Vocabulary Builder</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <button @click="startQuizSetup"
+                        class="jl-chip hover:bg-opacity-70 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border jl-border">
+                        <i class="fa-solid fa-gamepad text-primary"></i>
+                        <span class="hidden sm:inline">开始测验</span>
+                    </button>
+
+                    <div class="h-6 w-px jl-border mx-1"></div>
+
+                    <button @click="showSettings = true"
+                        class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition jl-muted"
+                        title="设置">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+
+                    <button @click="toggleDarkMode"
+                        class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition"
+                        title="切换主题">
+                        <i class="fa-solid" :class="isDarkMode ? 'fa-sun text-yellow-500' : 'fa-moon jl-muted'"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+
+            <!-- Quiz Mode Overlay -->
+            <transition name="fade">
+                <div v-if="quiz.active" class="fixed inset-0 z-50 flex flex-col"
+                    :class="isDarkMode ? 'bg-black/30' : 'bg-black/20'">
+                    <!-- Quiz Header -->
+                    <div class="px-6 py-4 border-b jl-border flex justify-between items-center jl-surface">
+                        <h2 class="text-xl font-bold flex items-center gap-2">
+                            <span class="text-primary">测试模式</span>
+                            <span class="text-sm px-2 py-0.5 rounded font-normal jl-chip border jl-border">
+                                {{ quiz.mode === 'zh2en' ? '看中写英' : '看英写中' }}
+                            </span>
+                        </h2>
+                        <button @click="exitQuiz" class="jl-muted hover:text-red-500 transition flex items-center gap-1 text-sm font-medium">
+                            <i class="fa-solid fa-right-from-bracket"></i> 退出
+                        </button>
+                    </div>
+
+                    <!-- Quiz Content -->
+                    <div class="flex-grow flex flex-col items-center justify-center p-4 max-w-2xl mx-auto w-full">
+                        <div class="jl-surface rounded-2xl shadow-xl p-8 text-center relative overflow-hidden border jl-border w-full">
+                            <!-- Progress Bar -->
+                            <div class="absolute top-0 left-0 h-1.5 w-full" :class="isDarkMode ? 'bg-white/10' : 'bg-black/10'">
+                                <div class="h-full bg-primary transition-all duration-500"
+                                    :style="{ width: ((quiz.currentIdx + 1) / quiz.list.length * 100) + '%' }"></div>
+                            </div>
+
+                            <div v-if="!quiz.finished">
+                                <div class="jl-muted text-sm mb-6 uppercase tracking-wider font-semibold">
+                                    Question {{ quiz.currentIdx + 1 }} / {{ quiz.list.length }}
+                                </div>
+
+                                <!-- Question -->
+                                <div class="mb-8">
+                                    <h3 class="text-3xl md:text-4xl font-bold mb-2">
+                                        {{ quiz.mode === 'zh2en' ? quiz.currentWord.chinese : quiz.currentWord.english }}
+                                    </h3>
+                                    <p v-if="quiz.mode === 'zh2en' && quiz.currentWord.example" class="jl-muted italic text-sm">
+                                        Hint: "{{ quiz.currentWord.example.replace(new RegExp(quiz.currentWord.english, 'gi'), '_____') }}"
+                                    </p>
+                                </div>
+
+                                <!-- Input Area -->
+                                <div class="relative max-w-md mx-auto">
+                                    <input
+                                        v-model="quiz.userInput"
+                                        @keyup.enter="checkAnswer"
+                                        :disabled="quiz.answered"
+                                        type="text"
+                                        :placeholder="quiz.mode === 'zh2en' ? 'Type English word...' : '输入中文释义...'"
+                                        class="w-full px-5 py-4 text-center text-xl rounded-xl border-2 transition outline-none jl-input"
+                                        :class="inputStatusClass"
+                                        autofocus
+                                        ref="quizInput"
+                                    >
+                                    <div v-if="quiz.answered" class="mt-4 animate-fade-in">
+                                        <div v-if="quiz.isCorrect" class="text-green-500 font-bold text-lg flex items-center justify-center gap-2">
+                                            <i class="fa-solid fa-check-circle"></i> 正确! (Correct)
+                                        </div>
+                                        <div v-else class="text-red-500 font-bold text-lg">
+                                            <div class="flex items-center justify-center gap-2 mb-1">
+                                                <i class="fa-solid fa-circle-xmark"></i> 错误 (Wrong)
+                                            </div>
+                                            <div class="jl-muted text-sm font-normal">
+                                                答案:
+                                                <span class="font-bold">
+                                                    {{ quiz.mode === 'zh2en' ? quiz.currentWord.english : quiz.currentWord.chinese }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Button -->
+                                <button @click="quiz.answered ? nextQuestion() : checkAnswer()"
+                                    class="mt-8 px-8 py-3 bg-primary hover:bg-primaryDark text-white rounded-lg font-semibold shadow-lg shadow-indigo-500/30 transition w-full md:w-auto min-w-[150px]">
+                                    {{ quiz.answered ? (quiz.currentIdx === quiz.list.length - 1 ? '查看结果' : '下一题') : '提交答案' }}
+                                </button>
+                            </div>
+
+                            <!-- Results Summary -->
+                            <div v-else class="text-center">
+                                <div class="text-6xl mb-4">🎉</div>
+                                <h3 class="text-2xl font-bold mb-2">测试完成!</h3>
+                                <p class="jl-muted mb-6">最终得分</p>
+                                <div class="text-5xl font-black text-primary mb-8">
+                                    {{ Math.round((quiz.score / quiz.list.length) * 100) }}
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 text-sm mb-8">
+                                    <div class="p-3 rounded-lg border jl-border" :class="isDarkMode ? 'bg-green-900/20 text-green-300' : 'bg-green-50 text-green-600'">
+                                        <div class="font-bold text-xl">{{ quiz.score }}</div>
+                                        <div>Correct</div>
+                                    </div>
+                                    <div class="p-3 rounded-lg border jl-border" :class="isDarkMode ? 'bg-red-900/20 text-red-300' : 'bg-red-50 text-red-600'">
+                                        <div class="font-bold text-xl">{{ quiz.list.length - quiz.score }}</div>
+                                        <div>Incorrect</div>
+                                    </div>
+                                </div>
+                                <button @click="exitQuiz"
+                                    class="jl-chip px-6 py-2 rounded-lg font-medium transition border jl-border">
+                                    返回列表
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+
+            <!-- Input Section (Main View) -->
+            <section class="jl-surface rounded-xl shadow p-6 mb-6 border jl-border">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-primary"></i> 快速录入
+                    </h2>
+                    <span class="text-xs jl-muted jl-chip px-2 py-1 rounded border jl-border">
+                         {{ config.engine === 'ai' ? '✨ AI Enhanced' : '⚡ Basic Mode' }}
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <div class="md:col-span-4 relative group">
+                        <input v-model="newWord.english" @keyup.enter="handleEnter" type="text" placeholder="输入英文单词/词组..."
+                            class="w-full pl-4 pr-10 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input">
+                        <button @click="translate" :disabled="isTranslating"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 jl-muted hover:text-primary p-1 transition"
+                            title="自动翻译">
+                            <div v-if="isTranslating" class="loader"></div>
+                            <i v-else class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                    </div>
+
+                    <!-- POS -->
+                    <div class="md:col-span-2">
+                        <select v-model="newWord.pos" :disabled="isNewWordPhrase"
+                            class="w-full px-4 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input"
+                            :title="isNewWordPhrase ? '词组默认不填词性' : '选择词性（n. / v. / adj. / adv.）'">
+                            <option value="">词组/空</option>
+                            <option value="n.">n.</option>
+                            <option value="v.">v.</option>
+                            <option value="adj.">adj.</option>
+                            <option value="adv.">adv.</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-4">
+                        <input v-model="newWord.chinese" @keyup.enter="handleEnter" type="text" placeholder="输入中文释义 (可自动生成)"
+                            class="w-full px-4 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <button @click="addWord" class="w-full h-full bg-primary hover:bg-primaryDark text-white font-medium py-3 rounded-lg shadow-sm transition active:scale-95">
+                            添加
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="newWord.example" class="mt-3 flex items-start gap-2 text-sm jl-muted jl-surface-soft p-3 rounded-lg border jl-border">
+                    <i class="fa-solid fa-quote-left text-black/20 dark:text-white/20 mt-1"></i>
+                    <p>{{ newWord.example }}</p>
+                </div>
+            </section>
+
+            <!-- Tools & Filters -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 jl-surface p-3 rounded-xl shadow-sm border jl-border">
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <!-- View Toggle -->
+                    <div class="flex jl-surface-soft p-1 rounded-lg border jl-border">
+                        <button @click="viewMode = 'card'"
+                            :class="viewMode === 'card' ? 'jl-surface shadow text-primary border jl-border' : 'jl-muted'"
+                            class="px-3 py-1.5 rounded-md text-sm transition border border-transparent">
+                            <i class="fa-solid fa-grip"></i> 卡片
+                        </button>
+                        <button @click="viewMode = 'table'"
+                            :class="viewMode === 'table' ? 'jl-surface shadow text-primary border jl-border' : 'jl-muted'"
+                            class="px-3 py-1.5 rounded-md text-sm transition border border-transparent">
+                            <i class="fa-solid fa-list"></i> 表格
+                        </button>
+                    </div>
+
+                    <div class="h-6 w-px jl-border mx-1"></div>
+
+                    <button @click="toggleMask"
+                        class="px-2 py-1 transition"
+                        :class="(config.display.meaning && isMasked) ? 'text-primary' : 'jl-muted'"
+                        :disabled="!config.display.meaning"
+                        :title="config.display.meaning ? (isMasked ? '取消模糊中文' : '模糊中文') : '已关闭释义显示'">
+                        <i class="fa-solid" :class="isMasked ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </button>
+
+                    <button @click="exportCSV" class="jl-muted hover:text-green-600 px-2 py-1 transition" title="导出 CSV">
+                        <i class="fa-solid fa-file-arrow-down"></i>
+                    </button>
+
+                    <label class="jl-muted hover:text-blue-600 px-2 py-1 transition cursor-pointer" title="导入 CSV">
+                        <i class="fa-solid fa-file-arrow-up"></i>
+                        <input type="file" @change="importCSV" accept=".csv" class="hidden">
+                    </label>
+                </div>
+
+                <div class="flex gap-3 w-full md:w-auto">
+                    <div class="relative flex-1 md:w-64">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 jl-muted"></i>
+                        <input v-model="searchQuery" type="text" placeholder="搜索 (英文/中文/例句/词性)..."
+                            class="w-full pl-9 pr-4 py-2 rounded-lg border-transparent outline-none text-sm transition jl-input focus:ring-2 focus:ring-primary">
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: CARDS -->
+            <div v-if="viewMode === 'card'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <transition-group name="list">
+                    <div v-for="item in filteredList" :key="item.id"
+                        class="jl-card p-5 shadow-sm hover:shadow-md transition group relative overflow-hidden">
+
+                        <div class="flex justify-between items-start mb-2 gap-2">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <h3 class="text-xl font-bold truncate">{{ item.english }}</h3>
+                                <span v-if="config.display.pos && item.pos"
+                                    class="text-xs px-2 py-0.5 rounded-md jl-chip border jl-border shrink-0">
+                                    {{ item.pos }}
+                                </span>
+                            </div>
+                            <button @click="speak(item.english)" class="text-black/30 dark:text-white/30 hover:text-primary transition p-1" title="朗读">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+
+                        <div v-if="config.display.meaning"
+                            class="mb-3"
+                            :class="[{ 'blur-sm cursor-pointer hover:blur-none transition': isMasked }, 'jl-muted']"
+                            @click="isMasked && (isMasked = false)">
+                            {{ item.chinese }}
+                        </div>
+
+                        <div v-if="config.display.example && item.example"
+                            class="text-xs jl-muted italic border-l-2 pl-2 mb-2 line-clamp-2"
+                            :class="isDarkMode ? 'border-white/20' : 'border-black/10'">
+                            {{ item.example }}
+                        </div>
+
+                        <div class="flex justify-between items-end mt-2 pt-2 border-t jl-border">
+                            <span v-if="config.display.date" class="text-xs jl-muted">{{ formatDate(item.timestamp) }}</span>
+                            <span v-else></span>
+                            <button @click="deleteWord(item.id)"
+                                class="text-black/30 dark:text-white/30 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
+                                title="删除">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </transition-group>
+            </div>
+
+            <!-- VIEW: TABLE -->
+            <div v-else class="jl-surface rounded-xl shadow-sm border jl-border overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="jl-surface-soft uppercase tracking-wider text-xs jl-muted border-b jl-border">
+                            <tr>
+                                <th class="px-6 py-3 font-semibold">单词 (English)</th>
+                                <th v-if="config.display.pos" class="px-6 py-3 font-semibold whitespace-nowrap">词性</th>
+                                <th v-if="config.display.meaning" class="px-6 py-3 font-semibold">释义 (Meaning)</th>
+                                <th v-if="config.display.example" class="px-6 py-3 font-semibold hidden md:table-cell">例句 (Example)</th>
+                                <th v-if="config.display.date" class="px-6 py-3 font-semibold hidden lg:table-cell whitespace-nowrap">日期</th>
+                                <th class="px-6 py-3 font-semibold text-right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y jl-border">
+                            <tr v-for="item in filteredList" :key="item.id" class="hover:bg-black/5 dark:hover:bg-white/5 transition group">
+                                <td class="px-6 py-3 font-bold">{{ item.english }}</td>
+
+                                <td v-if="config.display.pos" class="px-6 py-3">
+                                    <span v-if="item.pos" class="text-xs px-2 py-0.5 rounded-md jl-chip border jl-border">{{ item.pos }}</span>
+                                    <span v-else class="jl-muted">-</span>
+                                </td>
+
+                                <td v-if="config.display.meaning" class="px-6 py-3 jl-muted"
+                                    :class="isMasked ? 'blur-sm cursor-pointer hover:blur-none transition' : ''"
+                                    @click="isMasked && (isMasked = false)">
+                                    {{ item.chinese }}
+                                </td>
+
+                                <td v-if="config.display.example" class="px-6 py-3 jl-muted italic hidden md:table-cell max-w-xs truncate">
+                                    {{ item.example }}
+                                </td>
+
+                                <td v-if="config.display.date" class="px-6 py-3 jl-muted hidden lg:table-cell whitespace-nowrap">
+                                    {{ formatDate(item.timestamp) }}
+                                </td>
+
+                                <td class="px-6 py-3 text-right">
+                                    <div class="flex justify-end gap-3">
+                                        <button @click="speak(item.english)" class="jl-muted hover:text-primary" title="朗读">
+                                            <i class="fa-solid fa-volume-high"></i>
+                                        </button>
+                                        <button @click="deleteWord(item.id)" class="jl-muted hover:text-red-500" title="删除">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr v-if="filteredList.length === 0">
+                                <td :colspan="2 + (config.display.pos?1:0) + (config.display.meaning?1:0) + (config.display.example?1:0) + (config.display.date?1:0)"
+                                    class="px-6 py-8 text-center jl-muted">
+                                    暂无单词，请先添加。
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Setup Quiz Modal -->
+        <div v-if="showQuizSetup" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            @click.self="showQuizSetup = false">
+            <div class="jl-surface rounded-2xl shadow-2xl p-6 w-full max-w-sm text-center border jl-border">
+                <div class="w-16 h-16 jl-surface-soft text-primary rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border jl-border">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">选择测试模式</h3>
+                <p class="jl-muted text-sm mb-6">本次测试将包含 {{ Math.min(20, filteredList.length) }} 个随机单词</p>
+
+                <div class="space-y-3">
+                    <button @click="startQuiz('zh2en')"
+                        class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
+                        <div class="text-left">
+                            <div class="font-bold group-hover:text-primary">拼写测试</div>
+                            <div class="text-xs jl-muted">看中文 → 写英文</div>
+                        </div>
+                        <i class="fa-solid fa-pen text-black/20 dark:text-white/30 group-hover:text-primary"></i>
+                    </button>
+
+                    <button @click="startQuiz('en2zh')"
+                        class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
+                        <div class="text-left">
+                            <div class="font-bold group-hover:text-primary">回忆测试</div>
+                            <div class="text-xs jl-muted">看英文 → 写中文</div>
+                        </div>
+                        <i class="fa-solid fa-language text-black/20 dark:text-white/30 group-hover:text-primary"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div v-if="showSettings" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showSettings = false">
+            <div class="jl-surface w-full max-w-md rounded-xl shadow-xl p-6 border jl-border">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold">设置</h3>
+                    <button @click="showSettings = false" class="jl-muted hover:text-black dark:hover:text-white" title="关闭">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">翻译引擎</label>
+                        <select v-model="config.engine" class="w-full p-2 rounded border jl-input outline-none focus:ring-2 focus:ring-primary">
+                            <option value="free">免费基础 (MyMemory)</option>
+                            <option value="ai">AI 高级 (OpenAI/DeepSeek)</option>
+                        </select>
+                    </div>
+
+                    <div v-if="config.engine === 'ai'" class="space-y-3 p-3 jl-surface-soft rounded border jl-border">
+                        <input v-model="config.baseUrl" placeholder="Base URL (Default: https://api.openai.com/v1)"
+                            class="w-full p-2 text-sm rounded border jl-input outline-none focus:ring-2 focus:ring-primary">
+                        <input v-model="config.apiKey" type="password" placeholder="API Key (sk-...)"
+                            class="w-full p-2 text-sm rounded border jl-input outline-none focus:ring-2 focus:ring-primary">
+                        <input v-model="config.model" placeholder="Model (e.g. gpt-3.5-turbo)"
+                            class="w-full p-2 text-sm rounded border jl-input outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+
+                    <div class="p-3 jl-surface-soft rounded border jl-border">
+                        <div class="text-sm font-medium mb-3">显示字段</div>
+
+                        <label class="flex items-center justify-between py-1">
+                            <span class="text-sm">显示词性（n. / v. / adj. / adv.）</span>
+                            <input type="checkbox" v-model="config.display.pos" class="h-4 w-4 accent-indigo-500">
+                        </label>
+
+                        <label class="flex items-center justify-between py-1">
+                            <span class="text-sm">显示释义（中文）</span>
+                            <input type="checkbox" v-model="config.display.meaning" class="h-4 w-4 accent-indigo-500">
+                        </label>
+
+                        <label class="flex items-center justify-between py-1">
+                            <span class="text-sm">显示例句</span>
+                            <input type="checkbox" v-model="config.display.example" class="h-4 w-4 accent-indigo-500">
+                        </label>
+
+                        <label class="flex items-center justify-between py-1">
+                            <span class="text-sm">显示日期</span>
+                            <input type="checkbox" v-model="config.display.date" class="h-4 w-4 accent-indigo-500">
+                        </label>
+
+                        <p class="text-xs jl-muted mt-2">提示：词组（包含空格）默认不填词性。</p>
+                    </div>
+
+                    <button @click="saveConfig" class="w-full bg-primary hover:bg-primaryDark text-white py-2 rounded mt-2 transition">
+                        保存
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted, watch, reactive, nextTick } = Vue;
+
+        createApp({
+            setup() {
+                // --- Helpers ---
+                const isPhrase = (english) => /\s/.test((english || '').trim());
+
+                const normalizePos = (pos) => {
+                    const raw = String(pos || '').trim().toLowerCase();
+                    const map = new Map([
+                        ['n', 'n.'], ['n.', 'n.'], ['noun', 'n.'],
+                        ['v', 'v.'], ['v.', 'v.'], ['verb', 'v.'],
+                        ['adj', 'adj.'], ['adj.', 'adj.'], ['adjective', 'adj.'],
+                        ['adv', 'adv.'], ['adv.', 'adv.'], ['adverb', 'adv.']
+                    ]);
+                    return map.get(raw) || '';
+                };
+
+                const applyTheme = (dark) => {
+                    document.documentElement.classList.toggle('dark', !!dark);
+                    document.body.setAttribute('theme-mode', dark ? 'dark' : 'light');
+                };
+
+                const escapeCsv = (value) => String(value ?? '').replace(/"/g, '""');
+
+                const parseCsvLine = (line) => {
+                    const result = [];
+                    let current = '';
+                    let inQuotes = false;
+
+                    for (let i = 0; i < line.length; i++) {
+                        const ch = line[i];
+
+                        if (inQuotes) {
+                            if (ch === '"') {
+                                if (line[i + 1] === '"') {
+                                    current += '"';
+                                    i++;
+                                } else {
+                                    inQuotes = false;
+                                }
+                            } else {
+                                current += ch;
+                            }
+                        } else {
+                            if (ch === '"') inQuotes = true;
+                            else if (ch === ',') { result.push(current); current = ''; }
+                            else current += ch;
+                        }
+                    }
+                    result.push(current);
+                    return result;
+                };
+
+                // --- Core Data ---
+                const wordList = ref([]);
+                const newWord = ref({ english: '', pos: '', chinese: '', example: '' });
+                const searchQuery = ref('');
+
+                // --- UI States ---
+                const viewMode = ref('card'); // 'card' | 'table'
+                const isDarkMode = ref(false);
+                const showSettings = ref(false);
+                const showQuizSetup = ref(false);
+                const isMasked = ref(false);
+                const isTranslating = ref(false);
+
+                // --- Config ---
+                const config = reactive({
+                    engine: 'free',
+                    apiKey: '',
+                    baseUrl: '',
+                    model: 'gpt-3.5-turbo',
+                    display: {
+                        pos: true,
+                        meaning: true,
+                        example: true,
+                        date: true
+                    }
+                });
+
+                // --- Quiz State ---
+                const quiz = reactive({
+                    active: false,
+                    mode: 'zh2en', // 'zh2en' or 'en2zh'
+                    list: [],
+                    currentIdx: 0,
+                    currentWord: {},
+                    userInput: '',
+                    answered: false,
+                    isCorrect: false,
+                    score: 0,
+                    finished: false
+                });
+
+                const quizInput = ref(null);
+
+                const isNewWordPhrase = computed(() => isPhrase(newWord.value.english));
+
+                // --- Initialization ---
+                onMounted(() => {
+                    const saved = localStorage.getItem('jl_data');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (Array.isArray(parsed)) {
+                            wordList.value = parsed.map(w => ({
+                                pos: '',
+                                example: '',
+                                ...w
+                            }));
+                        }
+                    }
+
+                    const savedConfig = localStorage.getItem('jl_config');
+                    if (savedConfig) {
+                        const parsed = JSON.parse(savedConfig);
+                        Object.assign(config, parsed || {});
+                        config.display = { pos: true, meaning: true, example: true, date: true, ...(parsed?.display || {}) };
+                    }
+
+                    const savedMasked = localStorage.getItem('jl_masked');
+                    if (savedMasked) isMasked.value = savedMasked === '1';
+
+                    if (
+                        localStorage.getItem('jl_theme') === 'dark' ||
+                        (!localStorage.getItem('jl_theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                    ) {
+                        isDarkMode.value = true;
+                    }
+
+                    applyTheme(isDarkMode.value);
+                });
+
+                watch(wordList, (v) => localStorage.setItem('jl_data', JSON.stringify(v)), { deep: true });
+
+                watch(isDarkMode, (v) => {
+                    localStorage.setItem('jl_theme', v ? 'dark' : 'light');
+                    applyTheme(v);
+                });
+
+                watch(isMasked, (v) => localStorage.setItem('jl_masked', v ? '1' : '0'));
+
+                watch(() => newWord.value.english, (v) => {
+                    if (isPhrase(v)) newWord.value.pos = '';
+                });
+
+                // --- Core Functions ---
+                const toggleDarkMode = () => isDarkMode.value = !isDarkMode.value;
+
+                const toggleMask = () => {
+                    if (!config.display.meaning) return;
+                    isMasked.value = !isMasked.value;
+                };
+
+                const addWord = () => {
+                    const english = newWord.value.english.trim();
+                    if (!english) return;
+
+                    const pos = isPhrase(english) ? '' : normalizePos(newWord.value.pos);
+
+                    wordList.value.unshift({
+                        id: Date.now(),
+                        english,
+                        pos,
+                        chinese: newWord.value.chinese.trim(),
+                        example: newWord.value.example.trim(),
+                        timestamp: Date.now()
+                    });
+
+                    newWord.value = { english: '', pos: '', chinese: '', example: '' };
+                };
+
+                const deleteWord = (id) => {
+                    if (confirm('Delete this word?')) wordList.value = wordList.value.filter(w => w.id !== id);
+                };
+
+                // --- Translation ---
+                const translate = async () => {
+                    if (!newWord.value.english) return;
+                    isTranslating.value = true;
+
+                    try {
+                        if (config.engine === 'ai' && config.apiKey) {
+                            await aiTranslate();
+                        } else {
+                            const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(newWord.value.english)}&langpair=en|zh-CN`);
+                            const data = await res.json();
+                            newWord.value.chinese = data.responseData.translatedText || '';
+                        }
+                    } catch (e) {
+                        alert('Translation failed');
+                    } finally {
+                        isTranslating.value = false;
+                    }
+                };
+
+                const aiTranslate = async () => {
+                    const english = newWord.value.english.trim();
+                    const prompt = [
+                        `For the English input, output ONLY valid JSON (no markdown).`,
+                        `Rules:`,
+                        `- "pos" must be one of ["n.","v.","adj.","adv."] or "" if the input is a phrase/multi-word.`,
+                        `- "meaning" must be a concise Chinese meaning.`,
+                        `- "example" must be a short English sentence using the input.`,
+                        `Return format: {"pos":"","meaning":"","example":""}`,
+                        `Input: "${english}"`
+                    ].join('\n');
+
+                    const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/chat/completions';
+
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${config.apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: config.model,
+                            messages: [{ role: 'user', content: prompt }]
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    try {
+                        const raw = data?.choices?.[0]?.message?.content || '';
+                        const json = JSON.parse(raw.replace(/```json|```/g, '').trim());
+
+                        newWord.value.chinese = json.meaning || '';
+                        newWord.value.example = json.example || '';
+
+                        if (!isPhrase(english)) {
+                            newWord.value.pos = normalizePos(json.pos);
+                        } else {
+                            newWord.value.pos = '';
+                        }
+                    } catch (e) {
+                        newWord.value.chinese = data?.choices?.[0]?.message?.content || 'AI response parse failed';
+                    }
+                };
+
+                const handleEnter = () => {
+                    if (newWord.value.english && !newWord.value.chinese) translate();
+                    else addWord();
+                };
+
+                // --- Quiz Logic ---
+                const startQuizSetup = () => {
+                    if (wordList.value.length < 1) return alert('先添加一些单词吧！');
+                    showQuizSetup.value = true;
+                };
+
+                const startQuiz = (mode) => {
+                    showQuizSetup.value = false;
+                    quiz.active = true;
+                    quiz.mode = mode;
+                    quiz.finished = false;
+                    quiz.score = 0;
+                    quiz.currentIdx = 0;
+
+                    const shuffled = [...wordList.value].sort(() => 0.5 - Math.random());
+                    quiz.list = shuffled.slice(0, 20);
+                    loadQuestion();
+                };
+
+                const loadQuestion = () => {
+                    quiz.currentWord = quiz.list[quiz.currentIdx];
+                    quiz.userInput = '';
+                    quiz.answered = false;
+                    quiz.isCorrect = false;
+                    nextTick(() => quizInput.value?.focus());
+                };
+
+                const checkAnswer = () => {
+                    if (!quiz.userInput.trim()) return;
+                    quiz.answered = true;
+
+                    const input = quiz.userInput.trim().toLowerCase();
+                    const target = quiz.mode === 'zh2en'
+                        ? String(quiz.currentWord.english || '').toLowerCase()
+                        : String(quiz.currentWord.chinese || '').toLowerCase();
+
+                    if (quiz.mode === 'zh2en') {
+                        quiz.isCorrect = input === target;
+                    } else {
+                        quiz.isCorrect = target.includes(input) || input.includes(target);
+                    }
+
+                    if (quiz.isCorrect) {
+                        quiz.score++;
+                        speak(quiz.mode === 'zh2en' ? 'Correct' : '正确');
+                    } else {
+                        speak('Wrong');
+                    }
+                };
+
+                const nextQuestion = () => {
+                    if (quiz.currentIdx < quiz.list.length - 1) {
+                        quiz.currentIdx++;
+                        loadQuestion();
+                    } else {
+                        quiz.finished = true;
+                    }
+                };
+
+                const exitQuiz = () => quiz.active = false;
+
+                const inputStatusClass = computed(() => {
+                    if (!quiz.answered) return 'border-transparent focus:border-primary';
+                    return quiz.isCorrect
+                        ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
+                        : 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300';
+                });
+
+                // --- Utils ---
+                const speak = (txt) => {
+                    const u = new SpeechSynthesisUtterance(txt);
+                    u.lang = /[\u4e00-\u9fff]/.test(txt) ? 'zh-CN' : 'en-US';
+                    window.speechSynthesis.speak(u);
+                };
+
+                const formatDate = (ts) => new Date(ts).toLocaleDateString();
+
+                const filteredList = computed(() => {
+                    if (!searchQuery.value) return wordList.value;
+                    const q = searchQuery.value.toLowerCase();
+
+                    return wordList.value.filter(w => {
+                        const en = String(w.english || '').toLowerCase();
+                        const zh = String(w.chinese || '');
+                        const ex = String(w.example || '').toLowerCase();
+                        const pos = String(w.pos || '').toLowerCase();
+                        return en.includes(q) || zh.includes(searchQuery.value) || ex.includes(q) || pos.includes(q);
+                    });
+                });
+
+                // --- Export/Import ---
+                const exportCSV = () => {
+                    let csv = "\uFEFFEnglish,PartOfSpeech,Meaning,Example,Date\n";
+                    wordList.value.forEach(w => {
+                        csv += `"${escapeCsv(w.english)}","${escapeCsv(w.pos || '')}","${escapeCsv(w.chinese)}","${escapeCsv(w.example || '')}","${new Date(w.timestamp).toISOString()}"\n`;
+                    });
+
+                    const a = document.createElement('a');
+                    a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+                    a.download = 'joshua_list.csv';
+                    a.click();
+                };
+
+                const importCSV = (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    const r = new FileReader();
+                    r.onload = (ev) => {
+                        const text = String(ev.target.result || '').replace(/\r\n/g, '\n');
+                        const lines = text.split('\n').filter(l => l.trim() !== '');
+                        if (lines.length < 2) return alert('CSV 为空或格式不正确');
+
+                        const header = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase().replace(/^\uFEFF/, ''));
+                        const findIdx = (names) => {
+                            for (const name of names) {
+                                const i = header.indexOf(name);
+                                if (i >= 0) return i;
+                            }
+                            return -1;
+                        };
+
+                        const idxEnglish = findIdx(['english', 'en', 'word', '单词']);
+                        const idxPos = findIdx(['partofspeech', 'pos', '词性']);
+                        const idxMeaning = findIdx(['meaning', 'chinese', '释义']);
+                        const idxExample = findIdx(['example', '例句']);
+                        const idxDate = findIdx(['date', 'timestamp', '时间']);
+
+                        let imported = 0;
+
+                        for (let i = 1; i < lines.length; i++) {
+                            const cols = parseCsvLine(lines[i]);
+                            const english = (cols[idxEnglish >= 0 ? idxEnglish : 0] || '').trim();
+                            if (!english) continue;
+
+                            const pos = isPhrase(english) ? '' : normalizePos(cols[idxPos] || '');
+                            const chinese = (cols[idxMeaning >= 0 ? idxMeaning : 1] || '').trim();
+                            const example = (cols[idxExample >= 0 ? idxExample : 2] || '').trim();
+
+                            let timestamp = Date.now();
+                            const dateStr = (cols[idxDate] || '').trim();
+                            if (dateStr) {
+                                const parsedDate = Date.parse(dateStr);
+                                if (!Number.isNaN(parsedDate)) timestamp = parsedDate;
+                            }
+
+                            if (!wordList.value.some(w => String(w.english || '').toLowerCase() === english.toLowerCase())) {
+                                wordList.value.push({
+                                    id: Date.now() + Math.random(),
+                                    english,
+                                    pos,
+                                    chinese,
+                                    example,
+                                    timestamp
+                                });
+                                imported++;
+                            }
+                        }
+
+                        alert(`Imported: ${imported}`);
+                        e.target.value = '';
+                    };
+
+                    r.readAsText(file);
+                };
+
+                const saveConfig = () => {
+                    localStorage.setItem('jl_config', JSON.stringify(config));
+                    showSettings.value = false;
+                    if (!config.display.meaning) isMasked.value = false;
+                };
+
+                return {
+                    wordList, newWord, searchQuery, viewMode, isDarkMode, showSettings, showQuizSetup,
+                    config, isTranslating, isMasked, quiz, quizInput, isNewWordPhrase,
+
+                    addWord, deleteWord, translate, handleEnter, speak, formatDate, filteredList,
+                    toggleDarkMode, toggleMask,
+                    startQuizSetup, startQuiz, checkAnswer, nextQuestion, exitQuiz, inputStatusClass,
+                    saveConfig, exportCSV, importCSV
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
