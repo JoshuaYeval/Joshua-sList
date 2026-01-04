@@ -13,8 +13,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#6366f1',
-                        primaryDark: '#4f46e5'
+                        primary: '#db6c49',
+                        primaryDark: '#e4e1d7'
                     }
                 }
             }
@@ -45,8 +45,8 @@
 
         /* 主题变量（参考你给的色调，做了适配） */
         :root {
-            --jl-primary: #2c2fd4;
-            --jl-primary-dark: #2c2fd4;
+            --jl-primary: #80231a;
+            --jl-primary-dark: #80231a;
         }
 
         body[theme-mode="dark"] {
@@ -360,6 +360,43 @@
 
                     <div class="h-6 w-px jl-border mx-1"></div>
 
+                    <!-- Sort Dropdown -->
+                    <div class="relative" @click.stop>
+                        <button @click="showSortMenu = !showSortMenu"
+                                class="px-2 py-1 transition jl-muted hover:text-primary flex items-center gap-1"
+                                title="排序">
+                            <i class="fa-solid fa-sort"></i>
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                        <div v-if="showSortMenu" class="absolute right-0 top-full mt-1 jl-surface border jl-border rounded-lg shadow-lg py-1 z-10 min-w-[140px]">
+                            <button @click="setSortBy('timestamp', 'desc')"
+                                    :class="sortBy === 'timestamp' && sortOrder === 'desc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                <i class="fa-solid fa-clock"></i> 最新优先
+                            </button>
+                            <button @click="setSortBy('timestamp', 'asc')"
+                                    :class="sortBy === 'timestamp' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left"></i> 最早优先
+                            </button>
+                            <button @click="setSortBy('english', 'asc')"
+                                    :class="sortBy === 'english' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                <i class="fa-solid fa-sort-alpha-down"></i> A-Z
+                            </button>
+                            <button @click="setSortBy('english', 'desc')"
+                                    :class="sortBy === 'english' && sortOrder === 'desc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                <i class="fa-solid fa-sort-alpha-up"></i> Z-A
+                            </button>
+                            <button @click="setSortBy('pos', 'asc')"
+                                    :class="sortBy === 'pos' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                <i class="fa-solid fa-tags"></i> 按词性
+                            </button>
+                        </div>
+                    </div>
+
                     <button @click="toggleMask"
                         class="px-2 py-1 transition"
                         :class="(config.display.meaning && isMasked) ? 'text-primary' : 'jl-muted'"
@@ -372,10 +409,13 @@
                         <i class="fa-solid fa-file-arrow-down"></i>
                     </button>
 
-                    <label class="jl-muted hover:text-blue-600 px-2 py-1 transition cursor-pointer" title="导入 CSV">
+                    <button @click="showAiFillModal = true" class="jl-muted hover:text-purple-600 px-2 py-1 transition" title="AI 智能补充">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </button>
+
+                    <button @click="showImportModal = true" class="jl-muted hover:text-blue-600 px-2 py-1 transition" title="导入 CSV">
                         <i class="fa-solid fa-file-arrow-up"></i>
-                        <input type="file" @change="importCSV" accept=".csv" class="hidden">
-                    </label>
+                    </button>
                 </div>
 
                 <div class="flex gap-3 w-full md:w-auto">
@@ -541,7 +581,7 @@
                         <label class="block text-sm font-medium mb-2">翻译引擎</label>
                         <select v-model="config.engine" class="w-full p-2 rounded border jl-input outline-none focus:ring-2 focus:ring-primary">
                             <option value="free">免费基础 (MyMemory)</option>
-                            <option value="ai">AI 高级 (OpenAI/DeepSeek)</option>
+                            <option value="ai">AI增强（api）</option>
                         </select>
                     </div>
 
@@ -583,6 +623,120 @@
                     <button @click="saveConfig" class="w-full bg-primary hover:bg-primaryDark text-white py-2 rounded mt-2 transition">
                         保存
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import Modal -->
+        <div v-if="showImportModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showImportModal = false">
+            <div class="jl-surface w-full max-w-md rounded-xl shadow-xl p-6 border jl-border">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold">导入单词</h3>
+                    <button @click="showImportModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="关闭">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-3">选择导入模式</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
+                                <input type="radio" v-model="importMode" value="replace" class="mr-3 accent-primary">
+                                <div>
+                                    <div class="font-medium">完全覆盖模式</div>
+                                    <div class="text-xs jl-muted">清空现有单词，导入新数据</div>
+                                </div>
+                            </label>
+                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
+                                <input type="radio" v-model="importMode" value="merge" class="mr-3 accent-primary">
+                                <div>
+                                    <div class="font-medium">增量模式</div>
+                                    <div class="text-xs jl-muted">保留现有单词，自动去重添加新单词</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-4 jl-border">
+                        <label class="block w-full">
+                            <div class="flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
+                                <div class="text-center">
+                                    <i class="fa-solid fa-cloud-arrow-up text-2xl jl-muted mb-2"></i>
+                                    <p class="text-sm font-medium">点击选择 CSV 文件</p>
+                                    <p class="text-xs jl-muted">或拖拽文件到此处</p>
+                                </div>
+                            </div>
+                            <input type="file" @change="handleImportFile" accept=".csv" class="hidden" ref="importFileInput">
+                        </label>
+                    </div>
+
+                    <div v-if="importProgress.show" class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span>{{ importProgress.message }}</span>
+                            <span>{{ importProgress.current }}/{{ importProgress.total }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full transition-all duration-300"
+                                 :style="{ width: (importProgress.current / importProgress.total * 100) + '%' }"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Fill Modal -->
+        <div v-if="showAiFillModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showAiFillModal = false">
+            <div class="jl-surface w-full max-w-md rounded-xl shadow-xl p-6 border jl-border">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold">AI 智能补充</h3>
+                    <button @click="showAiFillModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="关闭">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="p-4 jl-surface-soft rounded-lg border jl-border">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-primary"></i>
+                            <span class="font-medium">将要补充的内容</span>
+                        </div>
+                        <ul class="text-sm jl-muted space-y-1">
+                            <li>• 缺失的中文释义</li>
+                            <li>• 缺失的词性标注</li>
+                            <li>• 缺失的例句</li>
+                        </ul>
+                    </div>
+
+                    <div class="text-sm jl-muted">
+                        找到 <span class="font-bold text-primary">{{ incompleteWords.length }}</span> 个需要补充的单词
+                    </div>
+
+                    <div v-if="aiFillProgress.show" class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span>{{ aiFillProgress.message }}</span>
+                            <span>{{ aiFillProgress.current }}/{{ aiFillProgress.total }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full transition-all duration-300"
+                                 :style="{ width: (aiFillProgress.current / aiFillProgress.total * 100) + '%' }"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button @click="showAiFillModal = false"
+                                class="flex-1 px-4 py-2 border rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
+                            取消
+                        </button>
+                        <button @click="startAiFill" :disabled="aiFillProgress.show || incompleteWords.length === 0"
+                                class="flex-1 bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg transition disabled:opacity-50">
+                            <span v-if="!aiFillProgress.show">开始补充</span>
+                            <span v-else class="flex items-center justify-center gap-2">
+                                <div class="loader"></div>
+                                处理中...
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -654,8 +808,33 @@
                 const isDarkMode = ref(false);
                 const showSettings = ref(false);
                 const showQuizSetup = ref(false);
+                const showImportModal = ref(false);
+                const showAiFillModal = ref(false);
+                const showSortMenu = ref(false);
                 const isMasked = ref(false);
                 const isTranslating = ref(false);
+
+                // --- Import/Export States ---
+                const importMode = ref('merge'); // 'replace' | 'merge'
+                const importFileInput = ref(null);
+                const importProgress = reactive({
+                    show: false,
+                    message: '',
+                    current: 0,
+                    total: 0
+                });
+
+                // --- AI Fill States ---
+                const aiFillProgress = reactive({
+                    show: false,
+                    message: '',
+                    current: 0,
+                    total: 0
+                });
+
+                // --- Sort States ---
+                const sortBy = ref('timestamp');
+                const sortOrder = ref('desc');
 
                 // --- Config ---
                 const config = reactive({
@@ -689,30 +868,68 @@
 
                 const isNewWordPhrase = computed(() => isPhrase(newWord.value.english));
 
+                const incompleteWords = computed(() => {
+                    return wordList.value.filter(word => {
+                        const needsChinese = !word.chinese || word.chinese.trim() === '';
+                        const needsPos = !isPhrase(word.english) && (!word.pos || word.pos.trim() === '');
+                        const needsExample = !word.example || word.example.trim() === '';
+                        return needsChinese || needsPos || needsExample;
+                    });
+                });
+
                 // --- Initialization ---
                 onMounted(() => {
+                    // Load saved data
                     const saved = localStorage.getItem('jl_data');
                     if (saved) {
-                        const parsed = JSON.parse(saved);
-                        if (Array.isArray(parsed)) {
-                            wordList.value = parsed.map(w => ({
-                                pos: '',
-                                example: '',
-                                ...w
-                            }));
+                        try {
+                            const parsed = JSON.parse(saved);
+                            if (Array.isArray(parsed)) {
+                                wordList.value = parsed.map(w => ({
+                                    pos: '',
+                                    example: '',
+                                    ...w
+                                }));
+                            }
+                        } catch (e) {
+                            console.error('Failed to load saved data:', e);
                         }
                     }
 
+                    // Load saved config
                     const savedConfig = localStorage.getItem('jl_config');
                     if (savedConfig) {
-                        const parsed = JSON.parse(savedConfig);
-                        Object.assign(config, parsed || {});
-                        config.display = { pos: true, meaning: true, example: true, date: true, ...(parsed?.display || {}) };
+                        try {
+                            const parsed = JSON.parse(savedConfig);
+                            Object.assign(config, parsed || {});
+                            config.display = {
+                                pos: true,
+                                meaning: true,
+                                example: true,
+                                date: true,
+                                ...(parsed?.display || {})
+                            };
+                        } catch (e) {
+                            console.error('Failed to load config:', e);
+                        }
                     }
 
+                    // Load other preferences
                     const savedMasked = localStorage.getItem('jl_masked');
                     if (savedMasked) isMasked.value = savedMasked === '1';
 
+                    const savedSort = localStorage.getItem('jl_sort');
+                    if (savedSort) {
+                        try {
+                            const parsed = JSON.parse(savedSort);
+                            sortBy.value = parsed.by || 'timestamp';
+                            sortOrder.value = parsed.order || 'desc';
+                        } catch (e) {
+                            console.error('Failed to load sort preferences:', e);
+                        }
+                    }
+
+                    // Set theme
                     if (
                         localStorage.getItem('jl_theme') === 'dark' ||
                         (!localStorage.getItem('jl_theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -721,6 +938,9 @@
                     }
 
                     applyTheme(isDarkMode.value);
+
+                    // Event listeners
+                    document.addEventListener('click', handleClickOutside);
                 });
 
                 watch(wordList, (v) => localStorage.setItem('jl_data', JSON.stringify(v)), { deep: true });
@@ -731,6 +951,11 @@
                 });
 
                 watch(isMasked, (v) => localStorage.setItem('jl_masked', v ? '1' : '0'));
+
+                // Save sort preferences
+                watch([sortBy, sortOrder], ([by, order]) => {
+                    localStorage.setItem('jl_sort', JSON.stringify({ by, order }));
+                });
 
                 watch(() => newWord.value.english, (v) => {
                     if (isPhrase(v)) newWord.value.pos = '';
@@ -914,16 +1139,46 @@
                 const formatDate = (ts) => new Date(ts).toLocaleDateString();
 
                 const filteredList = computed(() => {
-                    if (!searchQuery.value) return wordList.value;
-                    const q = searchQuery.value.toLowerCase();
+                    let list = wordList.value;
 
-                    return wordList.value.filter(w => {
-                        const en = String(w.english || '').toLowerCase();
-                        const zh = String(w.chinese || '');
-                        const ex = String(w.example || '').toLowerCase();
-                        const pos = String(w.pos || '').toLowerCase();
-                        return en.includes(q) || zh.includes(searchQuery.value) || ex.includes(q) || pos.includes(q);
+                    // Apply search filter
+                    if (searchQuery.value) {
+                        const q = searchQuery.value.toLowerCase();
+                        list = list.filter(w => {
+                            const en = String(w.english || '').toLowerCase();
+                            const zh = String(w.chinese || '');
+                            const ex = String(w.example || '').toLowerCase();
+                            const pos = String(w.pos || '').toLowerCase();
+                            return en.includes(q) || zh.includes(searchQuery.value) || ex.includes(q) || pos.includes(q);
+                        });
+                    }
+
+                    // Apply sorting
+                    list = [...list].sort((a, b) => {
+                        let aVal, bVal;
+
+                        switch (sortBy.value) {
+                            case 'english':
+                                aVal = String(a.english || '').toLowerCase();
+                                bVal = String(b.english || '').toLowerCase();
+                                break;
+                            case 'pos':
+                                aVal = String(a.pos || '').toLowerCase();
+                                bVal = String(b.pos || '').toLowerCase();
+                                break;
+                            case 'timestamp':
+                            default:
+                                aVal = a.timestamp || 0;
+                                bVal = b.timestamp || 0;
+                                break;
+                        }
+
+                        if (aVal < bVal) return sortOrder.value === 'asc' ? -1 : 1;
+                        if (aVal > bVal) return sortOrder.value === 'asc' ? 1 : -1;
+                        return 0;
                     });
+
+                    return list;
                 });
 
                 // --- Export/Import ---
@@ -939,67 +1194,219 @@
                     a.click();
                 };
 
-                const importCSV = (e) => {
+                // --- Enhanced Import/Export Functions ---
+                const handleImportFile = (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
 
+                    importProgress.show = true;
+                    importProgress.message = '正在读取文件...';
+                    importProgress.current = 0;
+                    importProgress.total = 1;
+
                     const r = new FileReader();
                     r.onload = (ev) => {
-                        const text = String(ev.target.result || '').replace(/\r\n/g, '\n');
-                        const lines = text.split('\n').filter(l => l.trim() !== '');
-                        if (lines.length < 2) return alert('CSV 为空或格式不正确');
-
-                        const header = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase().replace(/^\uFEFF/, ''));
-                        const findIdx = (names) => {
-                            for (const name of names) {
-                                const i = header.indexOf(name);
-                                if (i >= 0) return i;
-                            }
-                            return -1;
-                        };
-
-                        const idxEnglish = findIdx(['english', 'en', 'word', '单词']);
-                        const idxPos = findIdx(['partofspeech', 'pos', '词性']);
-                        const idxMeaning = findIdx(['meaning', 'chinese', '释义']);
-                        const idxExample = findIdx(['example', '例句']);
-                        const idxDate = findIdx(['date', 'timestamp', '时间']);
-
-                        let imported = 0;
-
-                        for (let i = 1; i < lines.length; i++) {
-                            const cols = parseCsvLine(lines[i]);
-                            const english = (cols[idxEnglish >= 0 ? idxEnglish : 0] || '').trim();
-                            if (!english) continue;
-
-                            const pos = isPhrase(english) ? '' : normalizePos(cols[idxPos] || '');
-                            const chinese = (cols[idxMeaning >= 0 ? idxMeaning : 1] || '').trim();
-                            const example = (cols[idxExample >= 0 ? idxExample : 2] || '').trim();
-
-                            let timestamp = Date.now();
-                            const dateStr = (cols[idxDate] || '').trim();
-                            if (dateStr) {
-                                const parsedDate = Date.parse(dateStr);
-                                if (!Number.isNaN(parsedDate)) timestamp = parsedDate;
-                            }
-
-                            if (!wordList.value.some(w => String(w.english || '').toLowerCase() === english.toLowerCase())) {
-                                wordList.value.push({
-                                    id: Date.now() + Math.random(),
-                                    english,
-                                    pos,
-                                    chinese,
-                                    example,
-                                    timestamp
-                                });
-                                imported++;
-                            }
+                        try {
+                            processImportData(String(ev.target.result || ''));
+                        } catch (error) {
+                            alert('文件读取失败: ' + error.message);
+                            importProgress.show = false;
                         }
-
-                        alert(`Imported: ${imported}`);
                         e.target.value = '';
                     };
 
                     r.readAsText(file);
+                };
+
+                const processImportData = (text) => {
+                    const lines = text.replace(/\r\n/g, '\n').split('\n').filter(l => l.trim() !== '');
+                    if (lines.length < 2) {
+                        alert('CSV 为空或格式不正确');
+                        importProgress.show = false;
+                        return;
+                    }
+
+                    const header = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase().replace(/^\uFEFF/, ''));
+                    const findIdx = (names) => {
+                        for (const name of names) {
+                            const i = header.indexOf(name);
+                            if (i >= 0) return i;
+                        }
+                        return -1;
+                    };
+
+                    const idxEnglish = findIdx(['english', 'en', 'word', '单词']);
+                    const idxPos = findIdx(['partofspeech', 'pos', '词性']);
+                    const idxMeaning = findIdx(['meaning', 'chinese', '释义']);
+                    const idxExample = findIdx(['example', '例句']);
+                    const idxDate = findIdx(['date', 'timestamp', '时间']);
+
+                    importProgress.total = lines.length - 1;
+                    importProgress.message = '正在处理数据...';
+
+                    // Clear existing data if replace mode
+                    if (importMode.value === 'replace') {
+                        wordList.value = [];
+                    }
+
+                    let imported = 0;
+                    let skipped = 0;
+
+                    for (let i = 1; i < lines.length; i++) {
+                        importProgress.current = i;
+
+                        const cols = parseCsvLine(lines[i]);
+                        const english = (cols[idxEnglish >= 0 ? idxEnglish : 0] || '').trim();
+                        if (!english) {
+                            skipped++;
+                            continue;
+                        }
+
+                        // Check for duplicates in merge mode
+                        if (importMode.value === 'merge' &&
+                            wordList.value.some(w => String(w.english || '').toLowerCase() === english.toLowerCase())) {
+                            skipped++;
+                            continue;
+                        }
+
+                        const pos = isPhrase(english) ? '' : normalizePos(cols[idxPos] || '');
+                        const chinese = (cols[idxMeaning >= 0 ? idxMeaning : 1] || '').trim();
+                        const example = (cols[idxExample >= 0 ? idxExample : 2] || '').trim();
+
+                        let timestamp = Date.now();
+                        const dateStr = (cols[idxDate] || '').trim();
+                        if (dateStr) {
+                            const parsedDate = Date.parse(dateStr);
+                            if (!Number.isNaN(parsedDate)) timestamp = parsedDate;
+                        }
+
+                        wordList.value.push({
+                            id: Date.now() + Math.random(),
+                            english,
+                            pos,
+                            chinese,
+                            example,
+                            timestamp
+                        });
+                        imported++;
+                    }
+
+                    setTimeout(() => {
+                        importProgress.show = false;
+                        showImportModal.value = false;
+                        alert(`导入完成!\n成功导入: ${imported} 个单词\n跳过重复: ${skipped} 个单词`);
+                    }, 500);
+                };
+
+                // --- AI Fill Functions ---
+                const startAiFill = async () => {
+                    if (!config.apiKey || config.engine !== 'ai') {
+                        alert('请先在设置中配置 AI API');
+                        return;
+                    }
+
+                    const wordsToFill = incompleteWords.value;
+                    if (wordsToFill.length === 0) {
+                        alert('没有需要补充的单词');
+                        return;
+                    }
+
+                    aiFillProgress.show = true;
+                    aiFillProgress.total = wordsToFill.length;
+                    aiFillProgress.current = 0;
+
+                    for (let i = 0; i < wordsToFill.length; i++) {
+                        const word = wordsToFill[i];
+                        aiFillProgress.current = i + 1;
+                        aiFillProgress.message = `正在处理: ${word.english}`;
+
+                        try {
+                            await fillWordWithAI(word);
+                            // Small delay to prevent rate limiting
+                            await new Promise(resolve => setTimeout(resolve, 200));
+                        } catch (error) {
+                            console.error(`Failed to fill word ${word.english}:`, error);
+                        }
+                    }
+
+                    setTimeout(() => {
+                        aiFillProgress.show = false;
+                        showAiFillModal.value = false;
+                        alert(`AI 补充完成!\n处理了 ${wordsToFill.length} 个单词`);
+                    }, 500);
+                };
+
+                const fillWordWithAI = async (word) => {
+                    const english = word.english.trim();
+                    const needsChinese = !word.chinese || word.chinese.trim() === '';
+                    const needsPos = !isPhrase(english) && (!word.pos || word.pos.trim() === '');
+                    const needsExample = !word.example || word.example.trim() === '';
+
+                    if (!needsChinese && !needsPos && !needsExample) return;
+
+                    const prompt = [
+                        `For the English input, output ONLY valid JSON (no markdown).`,
+                        `Rules:`,
+                        `- "pos" must be one of ["n.","v.","adj.","adv."] or "" if the input is a phrase/multi-word.`,
+                        `- "meaning" must be a concise Chinese meaning.`,
+                        `- "example" must be a short English sentence using the input.`,
+                        `- Only fill missing fields, keep existing values.`,
+                        `Current data: {"pos":"${word.pos || ''}","meaning":"${word.chinese || ''}","example":"${word.example || ''}"}`,
+                        `Return format: {"pos":"","meaning":"","example":""}`,
+                        `Input: "${english}"`
+                    ].join('\n');
+
+                    const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/chat/completions';
+
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${config.apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: config.model,
+                            messages: [{ role: 'user', content: prompt }]
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    try {
+                        const raw = data?.choices?.[0]?.message?.content || '';
+                        const json = JSON.parse(raw.replace(/```json|```/g, '').trim());
+
+                        if (needsChinese && json.meaning) {
+                            word.chinese = json.meaning;
+                        }
+                        if (needsExample && json.example) {
+                            word.example = json.example;
+                        }
+                        if (needsPos && !isPhrase(english) && json.pos) {
+                            word.pos = normalizePos(json.pos);
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse AI response for', english, e);
+                    }
+                };
+
+                // --- Sort Functions ---
+                const setSortBy = (field, order) => {
+                    sortBy.value = field;
+                    sortOrder.value = order;
+                    showSortMenu.value = false;
+                };
+
+                // Close sort menu when clicking outside
+                const handleClickOutside = (e) => {
+                    if (showSortMenu.value && !e.target.closest('.relative')) {
+                        showSortMenu.value = false;
+                    }
+                };
+
+                const importCSV = (e) => {
+                    // Legacy function - redirect to new modal
+                    showImportModal.value = true;
                 };
 
                 const saveConfig = () => {
@@ -1010,12 +1417,14 @@
 
                 return {
                     wordList, newWord, searchQuery, viewMode, isDarkMode, showSettings, showQuizSetup,
-                    config, isTranslating, isMasked, quiz, quizInput, isNewWordPhrase,
+                    showImportModal, showAiFillModal, showSortMenu, importMode, importFileInput,
+                    importProgress, aiFillProgress, sortBy, sortOrder,
+                    config, isTranslating, isMasked, quiz, quizInput, isNewWordPhrase, incompleteWords,
 
                     addWord, deleteWord, translate, handleEnter, speak, formatDate, filteredList,
                     toggleDarkMode, toggleMask,
                     startQuizSetup, startQuiz, checkAnswer, nextQuestion, exitQuiz, inputStatusClass,
-                    saveConfig, exportCSV, importCSV
+                    saveConfig, exportCSV, importCSV, handleImportFile, startAiFill, setSortBy
                 };
             }
         }).mount('#app');
