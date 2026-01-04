@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joshua’s List - 智能单词本</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <title>Joshua's List - 智能单词�?/title>
     <script>
+        window.tailwind = window.tailwind || {};
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -18,128 +16,12 @@
                     }
                 }
             }
-        }
+        };
     </script>
-
-    <style>
-        /* 基础字体：避免强行覆盖 FontAwesome 图标字体 */
-        body,
-        input, button, textarea, select,
-        table {
-            font-family:
-                Consolas,
-                '思源宋体',
-                system-ui, -apple-system,
-                'Segoe UI', Roboto, Helvetica, Arial,
-                sans-serif;
-        }
-
-        code, pre, kbd, samp, tt {
-            font-family:
-                Consolas,
-                Monaco,
-                'Andale Mono',
-                'Ubuntu Mono',
-                monospace;
-        }
-
-        /* 主题变量（参考你给的色调，做了适配） */
-        :root {
-            --jl-primary: #80231a;
-            --jl-primary-dark: #80231a;
-        }
-
-        body[theme-mode="dark"] {
-            --jl-bg: #2B2B2B;
-            --jl-surface: #2D2E2D;
-            --jl-surface-soft: #303030;
-            --jl-card: hsl(60, 2%, 21%);
-            --jl-border: #5E5D5940;
-            --jl-text: hsl(50, 14%, 91%);
-            --jl-muted: hsl(60, 4%, 72%);
-            --jl-input-bg: #3D3D3A;
-
-            --jl-code-bg: #E5E5E20D;
-            --jl-code-text: #EA928A;
-            --jl-pre-code-text: #ABB2BF;
-
-            --jl-chip-bg: #E5E5E20D;
-            --jl-chip-hover: #E5E5E214;
-        }
-
-        body[theme-mode="light"] {
-            --jl-bg: hsl(55, 19%, 89%);
-            --jl-surface: #F8F7F2;
-            --jl-surface-soft: hsl(51, 24%, 95%);
-            --jl-card: hsl(40, 23%, 98%);
-            --jl-border: #87867F40;
-            --jl-text: hsl(49 19.6% 13.3%);
-            --jl-muted: hsl(47, 10%, 40%);
-            --jl-input-bg: #FFFFFF;
-
-            --jl-code-bg: #3D39290D;
-            --jl-code-text: #7C1B13;
-            --jl-pre-code-text: var(--jl-text);
-
-            --jl-chip-bg: #3D39290D;
-            --jl-chip-hover: #3D392914;
-        }
-
-        body {
-            background-color: var(--jl-bg);
-            color: var(--jl-text);
-            transition: background-color 300ms, color 300ms;
-        }
-
-        .jl-surface { background-color: var(--jl-surface); }
-        .jl-surface-soft { background-color: var(--jl-surface-soft); }
-        .jl-card {
-            background-color: var(--jl-card);
-            border: 1px solid var(--jl-border);
-            border-radius: 18px;
-        }
-        .jl-border { border-color: var(--jl-border) !important; }
-        .jl-muted { color: var(--jl-muted) !important; }
-
-        .jl-input {
-            background-color: var(--jl-input-bg) !important;
-            border-color: var(--jl-border) !important;
-            color: var(--jl-text) !important;
-        }
-        .jl-input::placeholder {
-            color: var(--jl-muted) !important;
-            opacity: 0.85;
-        }
-
-        .jl-chip {
-            background-color: var(--jl-chip-bg);
-            color: var(--jl-text);
-        }
-        .jl-chip:hover { background-color: var(--jl-chip-hover); }
-
-        code {
-            background-color: var(--jl-code-bg);
-            color: var(--jl-code-text);
-            padding: 0.1em 0.35em;
-            border-radius: 6px;
-        }
-        pre code { color: var(--jl-pre-code-text); }
-
-        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
-        .fade-enter-from, .fade-leave-to { opacity: 0; }
-        .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
-        .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-20px); }
-
-        .loader {
-            border: 2px solid rgba(255,255,255,0.25);
-            border-top: 2px solid var(--jl-primary);
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="JoshuaList.css">
 </head>
 
 <body class="transition-colors duration-300">
@@ -150,7 +32,7 @@
             <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <div>
-                        <h1 class="text-xl font-bold tracking-tight leading-tight">Joshua’s List</h1>
+                        <h1 class="text-xl font-bold tracking-tight leading-tight">Joshua鈥檚 List</h1>
                         <p class="text-xs jl-muted">Personal Vocabulary Builder</p>
                     </div>
                 </div>
@@ -158,20 +40,20 @@
                     <button @click="startQuizSetup"
                         class="jl-chip hover:bg-opacity-70 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border jl-border">
                         <i class="fa-solid fa-gamepad text-primary"></i>
-                        <span class="hidden sm:inline">开始测验</span>
+                        <span class="hidden sm:inline">寮€濮嬫祴楠?/span>
                     </button>
 
                     <div class="h-6 w-px jl-border mx-1"></div>
 
                     <button @click="showSettings = true"
                         class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition jl-muted"
-                        title="设置">
+                        title="璁剧�?>
                         <i class="fa-solid fa-gear"></i>
                     </button>
 
                     <button @click="toggleDarkMode"
                         class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition"
-                        title="切换主题">
+                        title="鍒囨崲涓婚">
                         <i class="fa-solid" :class="isDarkMode ? 'fa-sun text-yellow-500' : 'fa-moon jl-muted'"></i>
                     </button>
                 </div>
@@ -187,14 +69,13 @@
                     <!-- Quiz Header -->
                     <div class="px-6 py-4 border-b jl-border flex justify-between items-center jl-surface">
                         <h2 class="text-xl font-bold flex items-center gap-2">
-                            <span class="text-primary">测试模式</span>
+                            <span class="text-primary">娴嬭瘯妯″紡</span>
                             <span class="text-sm px-2 py-0.5 rounded font-normal jl-chip border jl-border">
-                                {{ quiz.mode === 'zh2en' ? '看中写英' : '看英写中' }}
+                                {{ quiz.mode === 'zh2en' ? '鐪嬩腑鍐欒嫳' : '鐪嬭嫳鍐欎腑' }}
                             </span>
                         </h2>
                         <button @click="exitQuiz" class="jl-muted hover:text-red-500 transition flex items-center gap-1 text-sm font-medium">
-                            <i class="fa-solid fa-right-from-bracket"></i> 退出
-                        </button>
+                            <i class="fa-solid fa-right-from-bracket"></i> 閫€�?                        </button>
                     </div>
 
                     <!-- Quiz Content -->
@@ -228,7 +109,7 @@
                                         @keyup.enter="checkAnswer"
                                         :disabled="quiz.answered"
                                         type="text"
-                                        :placeholder="quiz.mode === 'zh2en' ? 'Type English word...' : '输入中文释义...'"
+                                        :placeholder="quiz.mode === 'zh2en' ? 'Type English word...' : '杈撳叆涓枃閲婁�?..'"
                                         class="w-full px-5 py-4 text-center text-xl rounded-xl border-2 transition outline-none jl-input"
                                         :class="inputStatusClass"
                                         autofocus
@@ -236,14 +117,14 @@
                                     >
                                     <div v-if="quiz.answered" class="mt-4 animate-fade-in">
                                         <div v-if="quiz.isCorrect" class="text-green-500 font-bold text-lg flex items-center justify-center gap-2">
-                                            <i class="fa-solid fa-check-circle"></i> 正确! (Correct)
+                                            <i class="fa-solid fa-check-circle"></i> 姝ｇ�? (Correct)
                                         </div>
                                         <div v-else class="text-red-500 font-bold text-lg">
                                             <div class="flex items-center justify-center gap-2 mb-1">
-                                                <i class="fa-solid fa-circle-xmark"></i> 错误 (Wrong)
+                                                <i class="fa-solid fa-circle-xmark"></i> 閿欒�?(Wrong)
                                             </div>
                                             <div class="jl-muted text-sm font-normal">
-                                                答案:
+                                                绛旀�?
                                                 <span class="font-bold">
                                                     {{ quiz.mode === 'zh2en' ? quiz.currentWord.english : quiz.currentWord.chinese }}
                                                 </span>
@@ -255,15 +136,15 @@
                                 <!-- Action Button -->
                                 <button @click="quiz.answered ? nextQuestion() : checkAnswer()"
                                     class="mt-8 px-8 py-3 bg-primary hover:bg-primaryDark text-white rounded-lg font-semibold shadow-lg shadow-indigo-500/30 transition w-full md:w-auto min-w-[150px]">
-                                    {{ quiz.answered ? (quiz.currentIdx === quiz.list.length - 1 ? '查看结果' : '下一题') : '提交答案' }}
+                                    {{ quiz.answered ? (quiz.currentIdx === quiz.list.length - 1 ? '鏌ョ湅缁撴灉' : '涓嬩竴棰?) : '鎻愪氦绛旀�? }}
                                 </button>
                             </div>
 
                             <!-- Results Summary -->
                             <div v-else class="text-center">
-                                <div class="text-6xl mb-4">🎉</div>
-                                <h3 class="text-2xl font-bold mb-2">测试完成!</h3>
-                                <p class="jl-muted mb-6">最终得分</p>
+                                <div class="text-6xl mb-4">馃帀</div>
+                                <h3 class="text-2xl font-bold mb-2">娴嬭瘯瀹屾�?</h3>
+                                <p class="jl-muted mb-6">鏈€缁堝緱鍒?/p>
                                 <div class="text-5xl font-black text-primary mb-8">
                                     {{ Math.round((quiz.score / quiz.list.length) * 100) }}
                                 </div>
@@ -279,7 +160,7 @@
                                 </div>
                                 <button @click="exitQuiz"
                                     class="jl-chip px-6 py-2 rounded-lg font-medium transition border jl-border">
-                                    返回列表
+                                    杩斿洖鍒楄�?
                                 </button>
                             </div>
                         </div>
@@ -291,20 +172,19 @@
             <section class="jl-surface rounded-xl shadow p-6 mb-6 border jl-border">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-semibold flex items-center gap-2">
-                        <i class="fa-solid fa-plus-circle text-primary"></i> 快速录入
-                    </h2>
+                        <i class="fa-solid fa-plus-circle text-primary"></i> 蹇€熷綍鍏?                    </h2>
                     <span class="text-xs jl-muted jl-chip px-2 py-1 rounded border jl-border">
-                         {{ config.engine === 'ai' ? '✨ AI Enhanced' : '⚡ Basic Mode' }}
+                         {{ config.engine === 'ai' ? '�?AI Enhanced' : '�?Basic Mode' }}
                     </span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
                     <div class="md:col-span-4 relative group">
-                        <input v-model="newWord.english" @keyup.enter="handleEnter" type="text" placeholder="输入英文单词/词组..."
+                        <input v-model="newWord.english" @keyup.enter="handleEnter" type="text" placeholder="杈撳叆鑻辨枃鍗曡�?璇嶇�?.."
                             class="w-full pl-4 pr-10 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input">
                         <button @click="translate" :disabled="isTranslating"
                             class="absolute right-3 top-1/2 transform -translate-y-1/2 jl-muted hover:text-primary p-1 transition"
-                            title="自动翻译">
+                            title="鑷姩缈昏瘧">
                             <div v-if="isTranslating" class="loader"></div>
                             <i v-else class="fa-solid fa-wand-magic-sparkles"></i>
                         </button>
@@ -314,8 +194,8 @@
                     <div class="md:col-span-2">
                         <select v-model="newWord.pos" :disabled="isNewWordPhrase"
                             class="w-full px-4 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input"
-                            :title="isNewWordPhrase ? '词组默认不填词性' : '选择词性（n. / v. / adj. / adv.）'">
-                            <option value="">词组/空</option>
+                            :title="isNewWordPhrase ? '璇嶇粍榛樿涓嶅～璇嶆€? : '閫夋嫨璇嶆€э紙n. / v. / adj. / adv.�?">
+                            <option value="">璇嶇�?�?/option>
                             <option value="n.">n.</option>
                             <option value="v.">v.</option>
                             <option value="adj.">adj.</option>
@@ -324,13 +204,13 @@
                     </div>
 
                     <div class="md:col-span-4">
-                        <input v-model="newWord.chinese" @keyup.enter="handleEnter" type="text" placeholder="输入中文释义 (可自动生成)"
+                        <input v-model="newWord.chinese" @keyup.enter="handleEnter" type="text" placeholder="杈撳叆涓枃閲婁�?(鍙嚜鍔ㄧ敓�?"
                             class="w-full px-4 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input">
                     </div>
 
                     <div class="md:col-span-2">
                         <button @click="addWord" class="w-full h-full bg-primary hover:bg-primaryDark text-white font-medium py-3 rounded-lg shadow-sm transition active:scale-95">
-                            添加
+                            娣诲�?
                         </button>
                     </div>
                 </div>
@@ -349,22 +229,22 @@
                         <button @click="viewMode = 'card'"
                             :class="viewMode === 'card' ? 'jl-surface shadow text-primary border jl-border' : 'jl-muted'"
                             class="px-3 py-1.5 rounded-md text-sm transition border border-transparent">
-                            <i class="fa-solid fa-grip"></i> 卡片
+                            <i class="fa-solid fa-grip"></i> 鍗＄�?
                         </button>
                         <button @click="viewMode = 'table'"
                             :class="viewMode === 'table' ? 'jl-surface shadow text-primary border jl-border' : 'jl-muted'"
                             class="px-3 py-1.5 rounded-md text-sm transition border border-transparent">
-                            <i class="fa-solid fa-list"></i> 表格
+                            <i class="fa-solid fa-list"></i> 琛ㄦ�?
                         </button>
                     </div>
 
                     <div class="h-6 w-px jl-border mx-1"></div>
 
                     <!-- Sort Dropdown -->
-                    <div class="relative" @click.stop>
+                    <div class="relative" @click.stop data-sort-menu>
                         <button @click="showSortMenu = !showSortMenu"
                                 class="px-2 py-1 transition jl-muted hover:text-primary flex items-center gap-1"
-                                title="排序">
+                                title="鎺掑�?>
                             <i class="fa-solid fa-sort"></i>
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
@@ -372,13 +252,11 @@
                             <button @click="setSortBy('timestamp', 'desc')"
                                     :class="sortBy === 'timestamp' && sortOrder === 'desc' ? 'text-primary bg-primary/10' : 'jl-muted'"
                                     class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
-                                <i class="fa-solid fa-clock"></i> 最新优先
-                            </button>
+                                <i class="fa-solid fa-clock"></i> 鏈€鏂颁紭鍏?                            </button>
                             <button @click="setSortBy('timestamp', 'asc')"
                                     :class="sortBy === 'timestamp' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
                                     class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
-                                <i class="fa-solid fa-clock-rotate-left"></i> 最早优先
-                            </button>
+                                <i class="fa-solid fa-clock-rotate-left"></i> 鏈€鏃╀紭鍏?                            </button>
                             <button @click="setSortBy('english', 'asc')"
                                     :class="sortBy === 'english' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
                                     class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
@@ -392,8 +270,7 @@
                             <button @click="setSortBy('pos', 'asc')"
                                     :class="sortBy === 'pos' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
                                     class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
-                                <i class="fa-solid fa-tags"></i> 按词性
-                            </button>
+                                <i class="fa-solid fa-tags"></i> 鎸夎瘝鎬?                            </button>
                         </div>
                     </div>
 
@@ -401,19 +278,19 @@
                         class="px-2 py-1 transition"
                         :class="(config.display.meaning && isMasked) ? 'text-primary' : 'jl-muted'"
                         :disabled="!config.display.meaning"
-                        :title="config.display.meaning ? (isMasked ? '取消模糊中文' : '模糊中文') : '已关闭释义显示'">
+                        :title="config.display.meaning ? (isMasked ? '鍙栨秷妯＄硦涓�? : '妯＄硦涓枃') : '宸插叧闂噴涔夋樉绀?">
                         <i class="fa-solid" :class="isMasked ? 'fa-eye-slash' : 'fa-eye'"></i>
                     </button>
 
-                    <button @click="exportCSV" class="jl-muted hover:text-green-600 px-2 py-1 transition" title="导出 CSV">
+                    <button @click="exportCSV" class="jl-muted hover:text-green-600 px-2 py-1 transition" title="瀵煎�?CSV">
                         <i class="fa-solid fa-file-arrow-down"></i>
                     </button>
 
-                    <button @click="showAiFillModal = true" class="jl-muted hover:text-purple-600 px-2 py-1 transition" title="AI 智能补充">
+                    <button @click="showAiFillModal = true" class="jl-muted hover:text-purple-600 px-2 py-1 transition" title="AI 鏅鸿兘琛ュ厖">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                     </button>
 
-                    <button @click="showImportModal = true" class="jl-muted hover:text-blue-600 px-2 py-1 transition" title="导入 CSV">
+                    <button @click="showImportModal = true" class="jl-muted hover:text-blue-600 px-2 py-1 transition" title="瀵煎�?CSV">
                         <i class="fa-solid fa-file-arrow-up"></i>
                     </button>
                 </div>
@@ -421,7 +298,7 @@
                 <div class="flex gap-3 w-full md:w-auto">
                     <div class="relative flex-1 md:w-64">
                         <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 jl-muted"></i>
-                        <input v-model="searchQuery" type="text" placeholder="搜索 (英文/中文/例句/词性)..."
+                        <input v-model="searchQuery" type="text" placeholder="鎼滅�?(鑻辨�?涓�?渚嬪�?璇嶆�?..."
                             class="w-full pl-9 pr-4 py-2 rounded-lg border-transparent outline-none text-sm transition jl-input focus:ring-2 focus:ring-primary">
                     </div>
                 </div>
@@ -441,7 +318,7 @@
                                     {{ item.pos }}
                                 </span>
                             </div>
-                            <button @click="speak(item.english)" class="text-black/30 dark:text-white/30 hover:text-primary transition p-1" title="朗读">
+                            <button @click="speak(item.english)" class="text-black/30 dark:text-white/30 hover:text-primary transition p-1" title="鏈楄�?>
                                 <i class="fa-solid fa-volume-high"></i>
                             </button>
                         </div>
@@ -464,7 +341,7 @@
                             <span v-else></span>
                             <button @click="deleteWord(item.id)"
                                 class="text-black/30 dark:text-white/30 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
-                                title="删除">
+                                title="鍒犻�?>
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -478,12 +355,12 @@
                     <table class="w-full text-left text-sm">
                         <thead class="jl-surface-soft uppercase tracking-wider text-xs jl-muted border-b jl-border">
                             <tr>
-                                <th class="px-6 py-3 font-semibold">单词 (English)</th>
-                                <th v-if="config.display.pos" class="px-6 py-3 font-semibold whitespace-nowrap">词性</th>
-                                <th v-if="config.display.meaning" class="px-6 py-3 font-semibold">释义 (Meaning)</th>
-                                <th v-if="config.display.example" class="px-6 py-3 font-semibold hidden md:table-cell">例句 (Example)</th>
-                                <th v-if="config.display.date" class="px-6 py-3 font-semibold hidden lg:table-cell whitespace-nowrap">日期</th>
-                                <th class="px-6 py-3 font-semibold text-right">操作</th>
+                                <th class="px-6 py-3 font-semibold">鍗曡�?(English)</th>
+                                <th v-if="config.display.pos" class="px-6 py-3 font-semibold whitespace-nowrap">璇嶆�?/th>
+                                <th v-if="config.display.meaning" class="px-6 py-3 font-semibold">閲婁�?(Meaning)</th>
+                                <th v-if="config.display.example" class="px-6 py-3 font-semibold hidden md:table-cell">渚嬪�?(Example)</th>
+                                <th v-if="config.display.date" class="px-6 py-3 font-semibold hidden lg:table-cell whitespace-nowrap">鏃ユ�?/th>
+                                <th class="px-6 py-3 font-semibold text-right">鎿嶄�?/th>
                             </tr>
                         </thead>
                         <tbody class="divide-y jl-border">
@@ -511,10 +388,10 @@
 
                                 <td class="px-6 py-3 text-right">
                                     <div class="flex justify-end gap-3">
-                                        <button @click="speak(item.english)" class="jl-muted hover:text-primary" title="朗读">
+                                        <button @click="speak(item.english)" class="jl-muted hover:text-primary" title="鏈楄�?>
                                             <i class="fa-solid fa-volume-high"></i>
                                         </button>
-                                        <button @click="deleteWord(item.id)" class="jl-muted hover:text-red-500" title="删除">
+                                        <button @click="deleteWord(item.id)" class="jl-muted hover:text-red-500" title="鍒犻�?>
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </div>
@@ -524,13 +401,106 @@
                             <tr v-if="filteredList.length === 0">
                                 <td :colspan="2 + (config.display.pos?1:0) + (config.display.meaning?1:0) + (config.display.example?1:0) + (config.display.date?1:0)"
                                     class="px-6 py-8 text-center jl-muted">
-                                    暂无单词，请先添加。
-                                </td>
+                                    鏆傛棤鍗曡瘝锛岃鍏堟坊鍔犮�?                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            <!-- FILE WORKSPACE -->
+            <section class="jl-file-panel rounded-2xl shadow-xl border jl-border mt-10">
+                <div class="p-6 space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.4em] jl-muted">Workspace</p>
+                            <h2 class="text-2xl font-semibold mt-1">CSV 鏂囦欢搴?</h2>
+                            <p class="text-sm jl-muted">{{ folderStatusText }}</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 text-sm">
+                            <button @click="openLocalFolder"
+                                    class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-primary transition">
+                                <i class="fa-solid fa-folder-open"></i> 閫夋嫨鏂囨。鍖?
+                            </button>
+                            <button @click="refreshLocalFiles"
+                                    class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-primary transition"
+                                    :disabled="!directoryState.handle">
+                                <i class="fa-solid fa-arrows-rotate"></i> 鍒锋�?
+                            </button>
+                            <button @click="openLocalFile"
+                                    class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-primary transition">
+                                <i class="fa-solid fa-file-import"></i> 鍗曚�?CSV
+                            </button>
+                            <button @click="saveToLocal"
+                                    class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-green-600 transition"
+                                    :disabled="!activeList.handle">
+                                <i class="fa-solid fa-floppy-disk"></i> 鎻愪氦鍒颁綅�?
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-3 sm:grid-cols-3">
+                        <div class="jl-stat-card">
+                            <p class="text-xs jl-muted">褰撳墠鏂囦欢</p>
+                            <p class="text-lg font-semibold truncate">{{ activeList.name || '鏈惎鐢ㄦ枃�?' }}</p>
+                        </div>
+                        <div class="jl-stat-card">
+                            <p class="text-xs jl-muted">鏂囦欢鏁伴噺</p>
+                            <p class="text-2xl font-bold">{{ directoryState.fileCount }}</p>
+                        </div>
+                        <div class="jl-stat-card">
+                            <p class="text-xs jl-muted">鏈€杩戝閲忓挩�?</p>
+                            <p class="text-lg font-semibold">{{ activeList.lastModified ? formatDate(activeList.lastModified) : '鏈畾涔?' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row gap-3">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 jl-muted"></i>
+                            <input v-model="fileFilterQuery" type="text" placeholder="鎼滅�?CSV 鏂囦�?.."
+                                   class="w-full pl-10 pr-4 py-3 rounded-xl border jl-input outline-none text-sm">
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="jl-pill" :class="directoryState.isLoading ? 'animate-pulse' : ''">
+                                {{ directoryState.isLoading ? '姝ｅ湪鍖呭惈...' : '宸插叏娓呭崟' }}
+                            </span>
+                            <span class="jl-pill" v-if="visibleFiles.length">
+                                {{ visibleFiles.length }} / {{ filteredLocalFiles.length }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="jl-file-list" @scroll="handleFileScroll">
+                        <template v-if="directoryState.isLoading">
+                            <div class="file-skeleton" v-for="n in 6" :key="'skeleton-'+n"></div>
+                        </template>
+                        <template v-else-if="visibleFiles.length">
+                            <button v-for="file in visibleFiles" :key="file.id"
+                                    @click="loadLocalFile(file)"
+                                    class="jl-file-row"
+                                    :class="{ 'is-active': activeList.name === file.name }">
+                                <div class="min-w-0">
+                                    <p class="font-semibold truncate">{{ file.name }}</p>
+                                    <p class="text-xs jl-muted">{{ formatFileMeta(file) }}</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="jl-pill">CSV</span>
+                                    <i class="fa-solid fa-circle-play text-primary"></i>
+                                </div>
+                            </button>
+                        </template>
+                        <div v-else class="text-center py-12 jl-muted text-sm">
+                            娌℃湁鎵惧埌鍖呭�?"{{ fileFilterQuery }}" 鐨勯厤缃?鎵€鏈夌増鏈渶鍏堝紑鍚竴涓簲鐢ㄦ枃浠跺す銆?
+                        </div>
+                    </div>
+
+                    <button v-if="visibleFileCount < filteredLocalFiles.length"
+                            @click="loadMoreFiles"
+                            class="w-full text-sm jl-chip border jl-border py-2 rounded-lg">
+                        鍔犺浇鏇村
+                    </button>
+                </div>
+            </section>
 
         </main>
 
@@ -541,15 +511,15 @@
                 <div class="w-16 h-16 jl-surface-soft text-primary rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border jl-border">
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
-                <h3 class="text-xl font-bold mb-2">选择测试模式</h3>
-                <p class="jl-muted text-sm mb-6">本次测试将包含 {{ Math.min(20, filteredList.length) }} 个随机单词</p>
+                <h3 class="text-xl font-bold mb-2">閫夋嫨娴嬭瘯妯″紡</h3>
+                <p class="jl-muted text-sm mb-6">鏈娴嬭瘯灏嗗寘鍚?{{ Math.min(20, filteredList.length) }} 涓殢鏈哄崟�?/p>
 
                 <div class="space-y-3">
                     <button @click="startQuiz('zh2en')"
                         class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
                         <div class="text-left">
-                            <div class="font-bold group-hover:text-primary">拼写测试</div>
-                            <div class="text-xs jl-muted">看中文 → 写英文</div>
+                            <div class="font-bold group-hover:text-primary">鎷煎啓娴嬭瘯</div>
+                            <div class="text-xs jl-muted">鐪嬩腑鏂?�?鍐欒嫳鏂?/div>
                         </div>
                         <i class="fa-solid fa-pen text-black/20 dark:text-white/30 group-hover:text-primary"></i>
                     </button>
@@ -557,8 +527,8 @@
                     <button @click="startQuiz('en2zh')"
                         class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
                         <div class="text-left">
-                            <div class="font-bold group-hover:text-primary">回忆测试</div>
-                            <div class="text-xs jl-muted">看英文 → 写中文</div>
+                            <div class="font-bold group-hover:text-primary">鍥炲繂娴嬭瘯</div>
+                            <div class="text-xs jl-muted">鐪嬭嫳鏂?�?鍐欎腑鏂?/div>
                         </div>
                         <i class="fa-solid fa-language text-black/20 dark:text-white/30 group-hover:text-primary"></i>
                     </button>
@@ -570,18 +540,18 @@
         <div v-if="showSettings" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showSettings = false">
             <div class="jl-surface w-full max-w-md rounded-xl shadow-xl p-6 border jl-border">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold">设置</h3>
-                    <button @click="showSettings = false" class="jl-muted hover:text-black dark:hover:text-white" title="关闭">
+                    <h3 class="text-lg font-bold">璁剧�?/h3>
+                    <button @click="showSettings = false" class="jl-muted hover:text-black dark:hover:text-white" title="鍏抽�?>
                         <i class="fa-solid fa-times"></i>
                     </button>
                 </div>
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium mb-2">翻译引擎</label>
+                        <label class="block text-sm font-medium mb-2">缈昏瘧寮曟搸</label>
                         <select v-model="config.engine" class="w-full p-2 rounded border jl-input outline-none focus:ring-2 focus:ring-primary">
-                            <option value="free">免费基础 (MyMemory)</option>
-                            <option value="ai">AI增强（api）</option>
+                            <option value="free">鍏嶈垂鍩虹 (MyMemory)</option>
+                            <option value="ai">AI澧炲己锛坅pi�?/option>
                         </select>
                     </div>
 
@@ -595,33 +565,33 @@
                     </div>
 
                     <div class="p-3 jl-surface-soft rounded border jl-border">
-                        <div class="text-sm font-medium mb-3">显示字段</div>
+                        <div class="text-sm font-medium mb-3">鏄剧ず瀛楁�?/div>
 
                         <label class="flex items-center justify-between py-1">
-                            <span class="text-sm">显示词性（n. / v. / adj. / adv.）</span>
+                            <span class="text-sm">鏄剧ず璇嶆€э紙n. / v. / adj. / adv.�?/span>
                             <input type="checkbox" v-model="config.display.pos" class="h-4 w-4 accent-indigo-500">
                         </label>
 
                         <label class="flex items-center justify-between py-1">
-                            <span class="text-sm">显示释义（中文）</span>
+                            <span class="text-sm">鏄剧ず閲婁箟锛堜腑鏂囷級</span>
                             <input type="checkbox" v-model="config.display.meaning" class="h-4 w-4 accent-indigo-500">
                         </label>
 
                         <label class="flex items-center justify-between py-1">
-                            <span class="text-sm">显示例句</span>
+                            <span class="text-sm">鏄剧ず渚嬪彞</span>
                             <input type="checkbox" v-model="config.display.example" class="h-4 w-4 accent-indigo-500">
                         </label>
 
                         <label class="flex items-center justify-between py-1">
-                            <span class="text-sm">显示日期</span>
+                            <span class="text-sm">鏄剧ず鏃ユ湡</span>
                             <input type="checkbox" v-model="config.display.date" class="h-4 w-4 accent-indigo-500">
                         </label>
 
-                        <p class="text-xs jl-muted mt-2">提示：词组（包含空格）默认不填词性。</p>
+                        <p class="text-xs jl-muted mt-2">鎻愮ず锛氳瘝缁勶紙鍖呭惈绌烘牸锛夐粯璁や笉濉瘝鎬с€?/p>
                     </div>
 
                     <button @click="saveConfig" class="w-full bg-primary hover:bg-primaryDark text-white py-2 rounded mt-2 transition">
-                        保存
+                        淇濆�?
                     </button>
                 </div>
             </div>
@@ -631,28 +601,28 @@
         <div v-if="showImportModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showImportModal = false">
             <div class="jl-surface w-full max-w-md rounded-xl shadow-xl p-6 border jl-border">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold">导入单词</h3>
-                    <button @click="showImportModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="关闭">
+                    <h3 class="text-lg font-bold">瀵煎叆鍗曡瘝</h3>
+                    <button @click="showImportModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="鍏抽�?>
                         <i class="fa-solid fa-times"></i>
                     </button>
                 </div>
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium mb-3">选择导入模式</label>
+                        <label class="block text-sm font-medium mb-3">閫夋嫨瀵煎叆妯″紡</label>
                         <div class="space-y-2">
                             <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
                                 <input type="radio" v-model="importMode" value="replace" class="mr-3 accent-primary">
                                 <div>
-                                    <div class="font-medium">完全覆盖模式</div>
-                                    <div class="text-xs jl-muted">清空现有单词，导入新数据</div>
+                                    <div class="font-medium">瀹屽叏瑕嗙洊妯″紡</div>
+                                    <div class="text-xs jl-muted">娓呯┖鐜版湁鍗曡瘝锛屽鍏ユ柊鏁版嵁</div>
                                 </div>
                             </label>
                             <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
                                 <input type="radio" v-model="importMode" value="merge" class="mr-3 accent-primary">
                                 <div>
-                                    <div class="font-medium">增量模式</div>
-                                    <div class="text-xs jl-muted">保留现有单词，自动去重添加新单词</div>
+                                    <div class="font-medium">澧為噺妯″紡</div>
+                                    <div class="text-xs jl-muted">淇濈暀鐜版湁鍗曡瘝锛岃嚜鍔ㄥ幓閲嶆坊鍔犳柊鍗曡�?/div>
                                 </div>
                             </label>
                         </div>
@@ -663,8 +633,8 @@
                             <div class="flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
                                 <div class="text-center">
                                     <i class="fa-solid fa-cloud-arrow-up text-2xl jl-muted mb-2"></i>
-                                    <p class="text-sm font-medium">点击选择 CSV 文件</p>
-                                    <p class="text-xs jl-muted">或拖拽文件到此处</p>
+                                    <p class="text-sm font-medium">鐐瑰嚮閫夋嫨 CSV 鏂囦�?/p>
+                                    <p class="text-xs jl-muted">鎴栨嫋鎷芥枃浠跺埌姝ゅ</p>
                                 </div>
                             </div>
                             <input type="file" @change="handleImportFile" accept=".csv" class="hidden" ref="importFileInput">
@@ -689,8 +659,8 @@
         <div v-if="showAiFillModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showAiFillModal = false">
             <div class="jl-surface w-full max-w-md rounded-xl shadow-xl p-6 border jl-border">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold">AI 智能补充</h3>
-                    <button @click="showAiFillModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="关闭">
+                    <h3 class="text-lg font-bold">AI 鏅鸿兘琛ュ厖</h3>
+                    <button @click="showAiFillModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="鍏抽�?>
                         <i class="fa-solid fa-times"></i>
                     </button>
                 </div>
@@ -699,17 +669,17 @@
                     <div class="p-4 jl-surface-soft rounded-lg border jl-border">
                         <div class="flex items-center gap-2 mb-2">
                             <i class="fa-solid fa-wand-magic-sparkles text-primary"></i>
-                            <span class="font-medium">将要补充的内容</span>
+                            <span class="font-medium">灏嗚琛ュ厖鐨勫唴�?/span>
                         </div>
                         <ul class="text-sm jl-muted space-y-1">
-                            <li>• 缺失的中文释义</li>
-                            <li>• 缺失的词性标注</li>
-                            <li>• 缺失的例句</li>
+                            <li>�?缂哄け鐨勪腑鏂囬噴涔?/li>
+                            <li>�?缂哄け鐨勮瘝鎬ф爣�?/li>
+                            <li>�?缂哄け鐨勪緥�?/li>
                         </ul>
                     </div>
 
                     <div class="text-sm jl-muted">
-                        找到 <span class="font-bold text-primary">{{ incompleteWords.length }}</span> 个需要补充的单词
+                        鎵惧�?<span class="font-bold text-primary">{{ incompleteWords.length }}</span> 涓渶瑕佽ˉ鍏呯殑鍗曡�?
                     </div>
 
                     <div v-if="aiFillProgress.show" class="space-y-2">
@@ -726,14 +696,14 @@
                     <div class="flex gap-3">
                         <button @click="showAiFillModal = false"
                                 class="flex-1 px-4 py-2 border rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
-                            取消
+                            鍙栨�?
                         </button>
                         <button @click="startAiFill" :disabled="aiFillProgress.show || incompleteWords.length === 0"
                                 class="flex-1 bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg transition disabled:opacity-50">
-                            <span v-if="!aiFillProgress.show">开始补充</span>
+                            <span v-if="!aiFillProgress.show">寮€濮嬭ˉ�?/span>
                             <span v-else class="flex items-center justify-center gap-2">
                                 <div class="loader"></div>
-                                处理中...
+                                澶勭悊涓?..
                             </span>
                         </button>
                     </div>
@@ -743,691 +713,8 @@
 
     </div>
 
-    <script>
-        const { createApp, ref, computed, onMounted, watch, reactive, nextTick } = Vue;
+        <script type='module' src='./src/main.js'></script>
 
-        createApp({
-            setup() {
-                // --- Helpers ---
-                const isPhrase = (english) => /\s/.test((english || '').trim());
-
-                const normalizePos = (pos) => {
-                    const raw = String(pos || '').trim().toLowerCase();
-                    const map = new Map([
-                        ['n', 'n.'], ['n.', 'n.'], ['noun', 'n.'],
-                        ['v', 'v.'], ['v.', 'v.'], ['verb', 'v.'],
-                        ['adj', 'adj.'], ['adj.', 'adj.'], ['adjective', 'adj.'],
-                        ['adv', 'adv.'], ['adv.', 'adv.'], ['adverb', 'adv.']
-                    ]);
-                    return map.get(raw) || '';
-                };
-
-                const applyTheme = (dark) => {
-                    document.documentElement.classList.toggle('dark', !!dark);
-                    document.body.setAttribute('theme-mode', dark ? 'dark' : 'light');
-                };
-
-                const escapeCsv = (value) => String(value ?? '').replace(/"/g, '""');
-
-                const parseCsvLine = (line) => {
-                    const result = [];
-                    let current = '';
-                    let inQuotes = false;
-
-                    for (let i = 0; i < line.length; i++) {
-                        const ch = line[i];
-
-                        if (inQuotes) {
-                            if (ch === '"') {
-                                if (line[i + 1] === '"') {
-                                    current += '"';
-                                    i++;
-                                } else {
-                                    inQuotes = false;
-                                }
-                            } else {
-                                current += ch;
-                            }
-                        } else {
-                            if (ch === '"') inQuotes = true;
-                            else if (ch === ',') { result.push(current); current = ''; }
-                            else current += ch;
-                        }
-                    }
-                    result.push(current);
-                    return result;
-                };
-
-                // --- Core Data ---
-                const wordList = ref([]);
-                const newWord = ref({ english: '', pos: '', chinese: '', example: '' });
-                const searchQuery = ref('');
-
-                // --- UI States ---
-                const viewMode = ref('card'); // 'card' | 'table'
-                const isDarkMode = ref(false);
-                const showSettings = ref(false);
-                const showQuizSetup = ref(false);
-                const showImportModal = ref(false);
-                const showAiFillModal = ref(false);
-                const showSortMenu = ref(false);
-                const isMasked = ref(false);
-                const isTranslating = ref(false);
-
-                // --- Import/Export States ---
-                const importMode = ref('merge'); // 'replace' | 'merge'
-                const importFileInput = ref(null);
-                const importProgress = reactive({
-                    show: false,
-                    message: '',
-                    current: 0,
-                    total: 0
-                });
-
-                // --- AI Fill States ---
-                const aiFillProgress = reactive({
-                    show: false,
-                    message: '',
-                    current: 0,
-                    total: 0
-                });
-
-                // --- Sort States ---
-                const sortBy = ref('timestamp');
-                const sortOrder = ref('desc');
-
-                // --- Config ---
-                const config = reactive({
-                    engine: 'free',
-                    apiKey: '',
-                    baseUrl: '',
-                    model: 'gpt-3.5-turbo',
-                    display: {
-                        pos: true,
-                        meaning: true,
-                        example: true,
-                        date: true
-                    }
-                });
-
-                // --- Quiz State ---
-                const quiz = reactive({
-                    active: false,
-                    mode: 'zh2en', // 'zh2en' or 'en2zh'
-                    list: [],
-                    currentIdx: 0,
-                    currentWord: {},
-                    userInput: '',
-                    answered: false,
-                    isCorrect: false,
-                    score: 0,
-                    finished: false
-                });
-
-                const quizInput = ref(null);
-
-                const isNewWordPhrase = computed(() => isPhrase(newWord.value.english));
-
-                const incompleteWords = computed(() => {
-                    return wordList.value.filter(word => {
-                        const needsChinese = !word.chinese || word.chinese.trim() === '';
-                        const needsPos = !isPhrase(word.english) && (!word.pos || word.pos.trim() === '');
-                        const needsExample = !word.example || word.example.trim() === '';
-                        return needsChinese || needsPos || needsExample;
-                    });
-                });
-
-                // --- Initialization ---
-                onMounted(() => {
-                    // Load saved data
-                    const saved = localStorage.getItem('jl_data');
-                    if (saved) {
-                        try {
-                            const parsed = JSON.parse(saved);
-                            if (Array.isArray(parsed)) {
-                                wordList.value = parsed.map(w => ({
-                                    pos: '',
-                                    example: '',
-                                    ...w
-                                }));
-                            }
-                        } catch (e) {
-                            console.error('Failed to load saved data:', e);
-                        }
-                    }
-
-                    // Load saved config
-                    const savedConfig = localStorage.getItem('jl_config');
-                    if (savedConfig) {
-                        try {
-                            const parsed = JSON.parse(savedConfig);
-                            Object.assign(config, parsed || {});
-                            config.display = {
-                                pos: true,
-                                meaning: true,
-                                example: true,
-                                date: true,
-                                ...(parsed?.display || {})
-                            };
-                        } catch (e) {
-                            console.error('Failed to load config:', e);
-                        }
-                    }
-
-                    // Load other preferences
-                    const savedMasked = localStorage.getItem('jl_masked');
-                    if (savedMasked) isMasked.value = savedMasked === '1';
-
-                    const savedSort = localStorage.getItem('jl_sort');
-                    if (savedSort) {
-                        try {
-                            const parsed = JSON.parse(savedSort);
-                            sortBy.value = parsed.by || 'timestamp';
-                            sortOrder.value = parsed.order || 'desc';
-                        } catch (e) {
-                            console.error('Failed to load sort preferences:', e);
-                        }
-                    }
-
-                    // Set theme
-                    if (
-                        localStorage.getItem('jl_theme') === 'dark' ||
-                        (!localStorage.getItem('jl_theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
-                    ) {
-                        isDarkMode.value = true;
-                    }
-
-                    applyTheme(isDarkMode.value);
-
-                    // Event listeners
-                    document.addEventListener('click', handleClickOutside);
-                });
-
-                watch(wordList, (v) => localStorage.setItem('jl_data', JSON.stringify(v)), { deep: true });
-
-                watch(isDarkMode, (v) => {
-                    localStorage.setItem('jl_theme', v ? 'dark' : 'light');
-                    applyTheme(v);
-                });
-
-                watch(isMasked, (v) => localStorage.setItem('jl_masked', v ? '1' : '0'));
-
-                // Save sort preferences
-                watch([sortBy, sortOrder], ([by, order]) => {
-                    localStorage.setItem('jl_sort', JSON.stringify({ by, order }));
-                });
-
-                watch(() => newWord.value.english, (v) => {
-                    if (isPhrase(v)) newWord.value.pos = '';
-                });
-
-                // --- Core Functions ---
-                const toggleDarkMode = () => isDarkMode.value = !isDarkMode.value;
-
-                const toggleMask = () => {
-                    if (!config.display.meaning) return;
-                    isMasked.value = !isMasked.value;
-                };
-
-                const addWord = () => {
-                    const english = newWord.value.english.trim();
-                    if (!english) return;
-
-                    const pos = isPhrase(english) ? '' : normalizePos(newWord.value.pos);
-
-                    wordList.value.unshift({
-                        id: Date.now(),
-                        english,
-                        pos,
-                        chinese: newWord.value.chinese.trim(),
-                        example: newWord.value.example.trim(),
-                        timestamp: Date.now()
-                    });
-
-                    newWord.value = { english: '', pos: '', chinese: '', example: '' };
-                };
-
-                const deleteWord = (id) => {
-                    if (confirm('Delete this word?')) wordList.value = wordList.value.filter(w => w.id !== id);
-                };
-
-                // --- Translation ---
-                const translate = async () => {
-                    if (!newWord.value.english) return;
-                    isTranslating.value = true;
-
-                    try {
-                        if (config.engine === 'ai' && config.apiKey) {
-                            await aiTranslate();
-                        } else {
-                            const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(newWord.value.english)}&langpair=en|zh-CN`);
-                            const data = await res.json();
-                            newWord.value.chinese = data.responseData.translatedText || '';
-                        }
-                    } catch (e) {
-                        alert('Translation failed');
-                    } finally {
-                        isTranslating.value = false;
-                    }
-                };
-
-                const aiTranslate = async () => {
-                    const english = newWord.value.english.trim();
-                    const prompt = [
-                        `For the English input, output ONLY valid JSON (no markdown).`,
-                        `Rules:`,
-                        `- "pos" must be one of ["n.","v.","adj.","adv."] or "" if the input is a phrase/multi-word.`,
-                        `- "meaning" must be a concise Chinese meaning.`,
-                        `- "example" must be a short English sentence using the input.`,
-                        `Return format: {"pos":"","meaning":"","example":""}`,
-                        `Input: "${english}"`
-                    ].join('\n');
-
-                    const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/chat/completions';
-
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${config.apiKey}`
-                        },
-                        body: JSON.stringify({
-                            model: config.model,
-                            messages: [{ role: 'user', content: prompt }]
-                        })
-                    });
-
-                    const data = await res.json();
-
-                    try {
-                        const raw = data?.choices?.[0]?.message?.content || '';
-                        const json = JSON.parse(raw.replace(/```json|```/g, '').trim());
-
-                        newWord.value.chinese = json.meaning || '';
-                        newWord.value.example = json.example || '';
-
-                        if (!isPhrase(english)) {
-                            newWord.value.pos = normalizePos(json.pos);
-                        } else {
-                            newWord.value.pos = '';
-                        }
-                    } catch (e) {
-                        newWord.value.chinese = data?.choices?.[0]?.message?.content || 'AI response parse failed';
-                    }
-                };
-
-                const handleEnter = () => {
-                    if (newWord.value.english && !newWord.value.chinese) translate();
-                    else addWord();
-                };
-
-                // --- Quiz Logic ---
-                const startQuizSetup = () => {
-                    if (wordList.value.length < 1) return alert('先添加一些单词吧！');
-                    showQuizSetup.value = true;
-                };
-
-                const startQuiz = (mode) => {
-                    showQuizSetup.value = false;
-                    quiz.active = true;
-                    quiz.mode = mode;
-                    quiz.finished = false;
-                    quiz.score = 0;
-                    quiz.currentIdx = 0;
-
-                    const shuffled = [...wordList.value].sort(() => 0.5 - Math.random());
-                    quiz.list = shuffled.slice(0, 20);
-                    loadQuestion();
-                };
-
-                const loadQuestion = () => {
-                    quiz.currentWord = quiz.list[quiz.currentIdx];
-                    quiz.userInput = '';
-                    quiz.answered = false;
-                    quiz.isCorrect = false;
-                    nextTick(() => quizInput.value?.focus());
-                };
-
-                const checkAnswer = () => {
-                    if (!quiz.userInput.trim()) return;
-                    quiz.answered = true;
-
-                    const input = quiz.userInput.trim().toLowerCase();
-                    const target = quiz.mode === 'zh2en'
-                        ? String(quiz.currentWord.english || '').toLowerCase()
-                        : String(quiz.currentWord.chinese || '').toLowerCase();
-
-                    if (quiz.mode === 'zh2en') {
-                        quiz.isCorrect = input === target;
-                    } else {
-                        quiz.isCorrect = target.includes(input) || input.includes(target);
-                    }
-
-                    if (quiz.isCorrect) {
-                        quiz.score++;
-                        speak(quiz.mode === 'zh2en' ? 'Correct' : '正确');
-                    } else {
-                        speak('Wrong');
-                    }
-                };
-
-                const nextQuestion = () => {
-                    if (quiz.currentIdx < quiz.list.length - 1) {
-                        quiz.currentIdx++;
-                        loadQuestion();
-                    } else {
-                        quiz.finished = true;
-                    }
-                };
-
-                const exitQuiz = () => quiz.active = false;
-
-                const inputStatusClass = computed(() => {
-                    if (!quiz.answered) return 'border-transparent focus:border-primary';
-                    return quiz.isCorrect
-                        ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
-                        : 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300';
-                });
-
-                // --- Utils ---
-                const speak = (txt) => {
-                    const u = new SpeechSynthesisUtterance(txt);
-                    u.lang = /[\u4e00-\u9fff]/.test(txt) ? 'zh-CN' : 'en-US';
-                    window.speechSynthesis.speak(u);
-                };
-
-                const formatDate = (ts) => new Date(ts).toLocaleDateString();
-
-                const filteredList = computed(() => {
-                    let list = wordList.value;
-
-                    // Apply search filter
-                    if (searchQuery.value) {
-                        const q = searchQuery.value.toLowerCase();
-                        list = list.filter(w => {
-                            const en = String(w.english || '').toLowerCase();
-                            const zh = String(w.chinese || '');
-                            const ex = String(w.example || '').toLowerCase();
-                            const pos = String(w.pos || '').toLowerCase();
-                            return en.includes(q) || zh.includes(searchQuery.value) || ex.includes(q) || pos.includes(q);
-                        });
-                    }
-
-                    // Apply sorting
-                    list = [...list].sort((a, b) => {
-                        let aVal, bVal;
-
-                        switch (sortBy.value) {
-                            case 'english':
-                                aVal = String(a.english || '').toLowerCase();
-                                bVal = String(b.english || '').toLowerCase();
-                                break;
-                            case 'pos':
-                                aVal = String(a.pos || '').toLowerCase();
-                                bVal = String(b.pos || '').toLowerCase();
-                                break;
-                            case 'timestamp':
-                            default:
-                                aVal = a.timestamp || 0;
-                                bVal = b.timestamp || 0;
-                                break;
-                        }
-
-                        if (aVal < bVal) return sortOrder.value === 'asc' ? -1 : 1;
-                        if (aVal > bVal) return sortOrder.value === 'asc' ? 1 : -1;
-                        return 0;
-                    });
-
-                    return list;
-                });
-
-                // --- Export/Import ---
-                const exportCSV = () => {
-                    let csv = "\uFEFFEnglish,PartOfSpeech,Meaning,Example,Date\n";
-                    wordList.value.forEach(w => {
-                        csv += `"${escapeCsv(w.english)}","${escapeCsv(w.pos || '')}","${escapeCsv(w.chinese)}","${escapeCsv(w.example || '')}","${new Date(w.timestamp).toISOString()}"\n`;
-                    });
-
-                    const a = document.createElement('a');
-                    a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-                    a.download = 'joshua_list.csv';
-                    a.click();
-                };
-
-                // --- Enhanced Import/Export Functions ---
-                const handleImportFile = (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-
-                    importProgress.show = true;
-                    importProgress.message = '正在读取文件...';
-                    importProgress.current = 0;
-                    importProgress.total = 1;
-
-                    const r = new FileReader();
-                    r.onload = (ev) => {
-                        try {
-                            processImportData(String(ev.target.result || ''));
-                        } catch (error) {
-                            alert('文件读取失败: ' + error.message);
-                            importProgress.show = false;
-                        }
-                        e.target.value = '';
-                    };
-
-                    r.readAsText(file);
-                };
-
-                const processImportData = (text) => {
-                    const lines = text.replace(/\r\n/g, '\n').split('\n').filter(l => l.trim() !== '');
-                    if (lines.length < 2) {
-                        alert('CSV 为空或格式不正确');
-                        importProgress.show = false;
-                        return;
-                    }
-
-                    const header = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase().replace(/^\uFEFF/, ''));
-                    const findIdx = (names) => {
-                        for (const name of names) {
-                            const i = header.indexOf(name);
-                            if (i >= 0) return i;
-                        }
-                        return -1;
-                    };
-
-                    const idxEnglish = findIdx(['english', 'en', 'word', '单词']);
-                    const idxPos = findIdx(['partofspeech', 'pos', '词性']);
-                    const idxMeaning = findIdx(['meaning', 'chinese', '释义']);
-                    const idxExample = findIdx(['example', '例句']);
-                    const idxDate = findIdx(['date', 'timestamp', '时间']);
-
-                    importProgress.total = lines.length - 1;
-                    importProgress.message = '正在处理数据...';
-
-                    // Clear existing data if replace mode
-                    if (importMode.value === 'replace') {
-                        wordList.value = [];
-                    }
-
-                    let imported = 0;
-                    let skipped = 0;
-
-                    for (let i = 1; i < lines.length; i++) {
-                        importProgress.current = i;
-
-                        const cols = parseCsvLine(lines[i]);
-                        const english = (cols[idxEnglish >= 0 ? idxEnglish : 0] || '').trim();
-                        if (!english) {
-                            skipped++;
-                            continue;
-                        }
-
-                        // Check for duplicates in merge mode
-                        if (importMode.value === 'merge' &&
-                            wordList.value.some(w => String(w.english || '').toLowerCase() === english.toLowerCase())) {
-                            skipped++;
-                            continue;
-                        }
-
-                        const pos = isPhrase(english) ? '' : normalizePos(cols[idxPos] || '');
-                        const chinese = (cols[idxMeaning >= 0 ? idxMeaning : 1] || '').trim();
-                        const example = (cols[idxExample >= 0 ? idxExample : 2] || '').trim();
-
-                        let timestamp = Date.now();
-                        const dateStr = (cols[idxDate] || '').trim();
-                        if (dateStr) {
-                            const parsedDate = Date.parse(dateStr);
-                            if (!Number.isNaN(parsedDate)) timestamp = parsedDate;
-                        }
-
-                        wordList.value.push({
-                            id: Date.now() + Math.random(),
-                            english,
-                            pos,
-                            chinese,
-                            example,
-                            timestamp
-                        });
-                        imported++;
-                    }
-
-                    setTimeout(() => {
-                        importProgress.show = false;
-                        showImportModal.value = false;
-                        alert(`导入完成!\n成功导入: ${imported} 个单词\n跳过重复: ${skipped} 个单词`);
-                    }, 500);
-                };
-
-                // --- AI Fill Functions ---
-                const startAiFill = async () => {
-                    if (!config.apiKey || config.engine !== 'ai') {
-                        alert('请先在设置中配置 AI API');
-                        return;
-                    }
-
-                    const wordsToFill = incompleteWords.value;
-                    if (wordsToFill.length === 0) {
-                        alert('没有需要补充的单词');
-                        return;
-                    }
-
-                    aiFillProgress.show = true;
-                    aiFillProgress.total = wordsToFill.length;
-                    aiFillProgress.current = 0;
-
-                    for (let i = 0; i < wordsToFill.length; i++) {
-                        const word = wordsToFill[i];
-                        aiFillProgress.current = i + 1;
-                        aiFillProgress.message = `正在处理: ${word.english}`;
-
-                        try {
-                            await fillWordWithAI(word);
-                            // Small delay to prevent rate limiting
-                            await new Promise(resolve => setTimeout(resolve, 200));
-                        } catch (error) {
-                            console.error(`Failed to fill word ${word.english}:`, error);
-                        }
-                    }
-
-                    setTimeout(() => {
-                        aiFillProgress.show = false;
-                        showAiFillModal.value = false;
-                        alert(`AI 补充完成!\n处理了 ${wordsToFill.length} 个单词`);
-                    }, 500);
-                };
-
-                const fillWordWithAI = async (word) => {
-                    const english = word.english.trim();
-                    const needsChinese = !word.chinese || word.chinese.trim() === '';
-                    const needsPos = !isPhrase(english) && (!word.pos || word.pos.trim() === '');
-                    const needsExample = !word.example || word.example.trim() === '';
-
-                    if (!needsChinese && !needsPos && !needsExample) return;
-
-                    const prompt = [
-                        `For the English input, output ONLY valid JSON (no markdown).`,
-                        `Rules:`,
-                        `- "pos" must be one of ["n.","v.","adj.","adv."] or "" if the input is a phrase/multi-word.`,
-                        `- "meaning" must be a concise Chinese meaning.`,
-                        `- "example" must be a short English sentence using the input.`,
-                        `- Only fill missing fields, keep existing values.`,
-                        `Current data: {"pos":"${word.pos || ''}","meaning":"${word.chinese || ''}","example":"${word.example || ''}"}`,
-                        `Return format: {"pos":"","meaning":"","example":""}`,
-                        `Input: "${english}"`
-                    ].join('\n');
-
-                    const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/chat/completions';
-
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${config.apiKey}`
-                        },
-                        body: JSON.stringify({
-                            model: config.model,
-                            messages: [{ role: 'user', content: prompt }]
-                        })
-                    });
-
-                    const data = await res.json();
-
-                    try {
-                        const raw = data?.choices?.[0]?.message?.content || '';
-                        const json = JSON.parse(raw.replace(/```json|```/g, '').trim());
-
-                        if (needsChinese && json.meaning) {
-                            word.chinese = json.meaning;
-                        }
-                        if (needsExample && json.example) {
-                            word.example = json.example;
-                        }
-                        if (needsPos && !isPhrase(english) && json.pos) {
-                            word.pos = normalizePos(json.pos);
-                        }
-                    } catch (e) {
-                        console.error('Failed to parse AI response for', english, e);
-                    }
-                };
-
-                // --- Sort Functions ---
-                const setSortBy = (field, order) => {
-                    sortBy.value = field;
-                    sortOrder.value = order;
-                    showSortMenu.value = false;
-                };
-
-                // Close sort menu when clicking outside
-                const handleClickOutside = (e) => {
-                    if (showSortMenu.value && !e.target.closest('.relative')) {
-                        showSortMenu.value = false;
-                    }
-                };
-
-                const importCSV = (e) => {
-                    // Legacy function - redirect to new modal
-                    showImportModal.value = true;
-                };
-
-                const saveConfig = () => {
-                    localStorage.setItem('jl_config', JSON.stringify(config));
-                    showSettings.value = false;
-                    if (!config.display.meaning) isMasked.value = false;
-                };
-
-                return {
-                    wordList, newWord, searchQuery, viewMode, isDarkMode, showSettings, showQuizSetup,
-                    showImportModal, showAiFillModal, showSortMenu, importMode, importFileInput,
-                    importProgress, aiFillProgress, sortBy, sortOrder,
-                    config, isTranslating, isMasked, quiz, quizInput, isNewWordPhrase, incompleteWords,
-
-                    addWord, deleteWord, translate, handleEnter, speak, formatDate, filteredList,
-                    toggleDarkMode, toggleMask,
-                    startQuizSetup, startQuiz, checkAnswer, nextQuestion, exitQuiz, inputStatusClass,
-                    saveConfig, exportCSV, importCSV, handleImportFile, startAiFill, setSortBy
-                };
-            }
-        }).mount('#app');
-    </script>
 </body>
 </html>
+
