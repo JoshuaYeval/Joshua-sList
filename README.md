@@ -41,6 +41,7 @@ Unterstützt werden folgende Funktionen:
 ## CSV格式样例
 
 ```csv
-English,Meaning,Example,Timestamp
-"scrutiny","审视；严密监督","Public figures often face intense media scrutiny that can expose even minor mistakes.",2026-01-03T12:12:05.120Z
+English,PartOfSpeech,Meaning,Example,Date
+"insofar","adv.","到目前为止，在某一范围内","Insofar as I know, he is coming to the party.","2026-01-03T16:08:01.122Z"
+"premise","n.","前提；假设","The argument is based on the premise that everyone is honest.","2026-01-03T15:53:59.529Z"
 ```
