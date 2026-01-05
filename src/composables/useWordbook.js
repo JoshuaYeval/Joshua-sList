@@ -38,6 +38,41 @@ export const useWordbook = () => {
         }
     });
 
+    const parseSimpleYaml = (text) => {
+        const result = {};
+        text.split(/\r?\n/).forEach((line) => {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) return;
+            const idx = trimmed.indexOf(':');
+            if (idx === -1) return;
+            const key = trimmed.slice(0, idx).trim();
+            const value = trimmed.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
+            if (key) result[key] = value;
+        });
+        return result;
+    };
+
+    const loadApiConfigFile = async () => {
+        const candidates = ['api.json', 'api.yaml', 'api.yml'];
+        for (const name of candidates) {
+            try {
+                const response = await fetch(name, { cache: 'no-store' });
+                if (!response.ok) continue;
+                const text = await response.text();
+                const parsed = name.endsWith('.json') ? JSON.parse(text) : parseSimpleYaml(text);
+                if (parsed.baseUrl) config.baseUrl = parsed.baseUrl;
+                if (parsed.apiKey) config.apiKey = parsed.apiKey;
+                if (parsed.model) config.model = parsed.model;
+                if (parsed.engine) config.engine = parsed.engine;
+                else if (parsed.apiKey || parsed.baseUrl) config.engine = 'ai';
+                return true;
+            } catch (error) {
+                console.warn('读取本地 API 配置失败', name, error);
+            }
+        }
+        return false;
+    };
+
     const isNewWordPhrase = computed(() => isPhrase(newWord.english));
 
     const incompleteWords = computed(() => wordList.value.filter((word) => {
@@ -420,7 +455,7 @@ export const useWordbook = () => {
         localStorage.setItem('jl_sort', JSON.stringify({ by, order }));
     });
 
-    onMounted(() => {
+    onMounted(async () => {
         const savedWords = localStorage.getItem('jl_data');
         if (savedWords) {
             try {
@@ -449,6 +484,8 @@ export const useWordbook = () => {
                 console.error('Failed to load config:', error);
             }
         }
+
+        await loadApiConfigFile();
 
         const savedMask = localStorage.getItem('jl_masked');
         if (savedMask) isMasked.value = savedMask === '1';
