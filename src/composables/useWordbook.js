@@ -162,7 +162,7 @@ export const useWordbook = () => {
             `Input: "${english}"`
         ].join('\n');
 
-        const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$, '') + '/chat/completions';
+        const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/chat/completions';
 
         const response = await fetch(url, {
             method: 'POST',
@@ -358,7 +358,7 @@ export const useWordbook = () => {
             `Input: "${english}"`
         ].join('\n');
 
-        const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$, '') + '/chat/completions';
+        const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/chat/completions';
 
         const response = await fetch(url, {
             method: 'POST',

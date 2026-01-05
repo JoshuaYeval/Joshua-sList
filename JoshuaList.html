@@ -2,8 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joshua's List - 智能单词�?/title>
+    <title>Joshua's List - 智能单词本</title>
     <script>
         window.tailwind = window.tailwind || {};
         tailwind.config = {
@@ -11,8 +12,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#db6c49',
-                        primaryDark: '#e4e1d7'
+                        primary: '#7c1b13',
+                        primaryDark: '#5c0f0b'
                     }
                 }
             }
@@ -29,10 +30,10 @@
 
         <!-- Header -->
         <header class="jl-surface shadow-sm sticky top-0 z-30 border-b jl-border">
-            <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <div>
-                        <h1 class="text-xl font-bold tracking-tight leading-tight">Joshua鈥檚 List</h1>
+                        <h1 class="text-xl font-bold tracking-tight leading-tight">Joshua’s List</h1>
                         <p class="text-xs jl-muted">Personal Vocabulary Builder</p>
                     </div>
                 </div>
@@ -40,27 +41,27 @@
                     <button @click="startQuizSetup"
                         class="jl-chip hover:bg-opacity-70 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border jl-border">
                         <i class="fa-solid fa-gamepad text-primary"></i>
-                        <span class="hidden sm:inline">寮€濮嬫祴楠?/span>
+                        <span class="hidden sm:inline">开始测验</span>
                     </button>
 
                     <div class="h-6 w-px jl-border mx-1"></div>
 
                     <button @click="showSettings = true"
                         class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition jl-muted"
-                        title="璁剧�?>
+                        title="设置">
                         <i class="fa-solid fa-gear"></i>
                     </button>
 
                     <button @click="toggleDarkMode"
                         class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition"
-                        title="鍒囨崲涓婚">
+                        title="切换主题">
                         <i class="fa-solid" :class="isDarkMode ? 'fa-sun text-yellow-500' : 'fa-moon jl-muted'"></i>
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+        <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
 
             <!-- Quiz Mode Overlay -->
             <transition name="fade">
@@ -69,13 +70,14 @@
                     <!-- Quiz Header -->
                     <div class="px-6 py-4 border-b jl-border flex justify-between items-center jl-surface">
                         <h2 class="text-xl font-bold flex items-center gap-2">
-                            <span class="text-primary">娴嬭瘯妯″紡</span>
+                            <span class="text-primary">测试模式</span>
                             <span class="text-sm px-2 py-0.5 rounded font-normal jl-chip border jl-border">
-                                {{ quiz.mode === 'zh2en' ? '鐪嬩腑鍐欒嫳' : '鐪嬭嫳鍐欎腑' }}
+                                {{ quiz.mode === 'zh2en' ? '看中写英' : '看英写中' }}
                             </span>
                         </h2>
                         <button @click="exitQuiz" class="jl-muted hover:text-red-500 transition flex items-center gap-1 text-sm font-medium">
-                            <i class="fa-solid fa-right-from-bracket"></i> 閫€�?                        </button>
+                            <i class="fa-solid fa-right-from-bracket"></i> 退出
+                        </button>
                     </div>
 
                     <!-- Quiz Content -->
@@ -109,7 +111,7 @@
                                         @keyup.enter="checkAnswer"
                                         :disabled="quiz.answered"
                                         type="text"
-                                        :placeholder="quiz.mode === 'zh2en' ? 'Type English word...' : '杈撳叆涓枃閲婁�?..'"
+                                        :placeholder="quiz.mode === 'zh2en' ? 'Type English word...' : '输入中文释义...'"
                                         class="w-full px-5 py-4 text-center text-xl rounded-xl border-2 transition outline-none jl-input"
                                         :class="inputStatusClass"
                                         autofocus
@@ -117,14 +119,14 @@
                                     >
                                     <div v-if="quiz.answered" class="mt-4 animate-fade-in">
                                         <div v-if="quiz.isCorrect" class="text-green-500 font-bold text-lg flex items-center justify-center gap-2">
-                                            <i class="fa-solid fa-check-circle"></i> 姝ｇ�? (Correct)
+                                            <i class="fa-solid fa-check-circle"></i> 正确 (Correct)
                                         </div>
                                         <div v-else class="text-red-500 font-bold text-lg">
                                             <div class="flex items-center justify-center gap-2 mb-1">
-                                                <i class="fa-solid fa-circle-xmark"></i> 閿欒�?(Wrong)
+                                                <i class="fa-solid fa-circle-xmark"></i> 错误 (Wrong)
                                             </div>
                                             <div class="jl-muted text-sm font-normal">
-                                                绛旀�?
+                                                答案
                                                 <span class="font-bold">
                                                     {{ quiz.mode === 'zh2en' ? quiz.currentWord.english : quiz.currentWord.chinese }}
                                                 </span>
@@ -136,31 +138,31 @@
                                 <!-- Action Button -->
                                 <button @click="quiz.answered ? nextQuestion() : checkAnswer()"
                                     class="mt-8 px-8 py-3 bg-primary hover:bg-primaryDark text-white rounded-lg font-semibold shadow-lg shadow-indigo-500/30 transition w-full md:w-auto min-w-[150px]">
-                                    {{ quiz.answered ? (quiz.currentIdx === quiz.list.length - 1 ? '鏌ョ湅缁撴灉' : '涓嬩竴棰?) : '鎻愪氦绛旀�? }}
+                                    {{ quiz.answered ? (quiz.currentIdx === quiz.list.length - 1 ? '查看结果' : '下一题') : '提交答案' }}
                                 </button>
                             </div>
 
                             <!-- Results Summary -->
                             <div v-else class="text-center">
                                 <div class="text-6xl mb-4">馃帀</div>
-                                <h3 class="text-2xl font-bold mb-2">娴嬭瘯瀹屾�?</h3>
-                                <p class="jl-muted mb-6">鏈€缁堝緱鍒?/p>
+                                <h3 class="text-2xl font-bold mb-2">测试完成</h3>
+                                <p class="jl-muted mb-6">最终得分</p>
                                 <div class="text-5xl font-black text-primary mb-8">
                                     {{ Math.round((quiz.score / quiz.list.length) * 100) }}
                                 </div>
                                 <div class="grid grid-cols-2 gap-4 text-sm mb-8">
                                     <div class="p-3 rounded-lg border jl-border" :class="isDarkMode ? 'bg-green-900/20 text-green-300' : 'bg-green-50 text-green-600'">
                                         <div class="font-bold text-xl">{{ quiz.score }}</div>
-                                        <div>Correct</div>
+                                        <div>正确</div>
                                     </div>
                                     <div class="p-3 rounded-lg border jl-border" :class="isDarkMode ? 'bg-red-900/20 text-red-300' : 'bg-red-50 text-red-600'">
                                         <div class="font-bold text-xl">{{ quiz.list.length - quiz.score }}</div>
-                                        <div>Incorrect</div>
+                                        <div>错误</div>
                                     </div>
                                 </div>
                                 <button @click="exitQuiz"
                                     class="jl-chip px-6 py-2 rounded-lg font-medium transition border jl-border">
-                                    杩斿洖鍒楄�?
+                                    返回列表
                                 </button>
                             </div>
                         </div>
@@ -168,339 +170,361 @@
                 </div>
             </transition>
 
-            <!-- Input Section (Main View) -->
-            <section class="jl-surface rounded-xl shadow p-6 mb-6 border jl-border">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-semibold flex items-center gap-2">
-                        <i class="fa-solid fa-plus-circle text-primary"></i> 蹇€熷綍鍏?                    </h2>
-                    <span class="text-xs jl-muted jl-chip px-2 py-1 rounded border jl-border">
-                         {{ config.engine === 'ai' ? '�?AI Enhanced' : '�?Basic Mode' }}
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
-                    <div class="md:col-span-4 relative group">
-                        <input v-model="newWord.english" @keyup.enter="handleEnter" type="text" placeholder="杈撳叆鑻辨枃鍗曡�?璇嶇�?.."
-                            class="w-full pl-4 pr-10 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input">
-                        <button @click="translate" :disabled="isTranslating"
-                            class="absolute right-3 top-1/2 transform -translate-y-1/2 jl-muted hover:text-primary p-1 transition"
-                            title="鑷姩缈昏瘧">
-                            <div v-if="isTranslating" class="loader"></div>
-                            <i v-else class="fa-solid fa-wand-magic-sparkles"></i>
-                        </button>
-                    </div>
-
-                    <!-- POS -->
-                    <div class="md:col-span-2">
-                        <select v-model="newWord.pos" :disabled="isNewWordPhrase"
-                            class="w-full px-4 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input"
-                            :title="isNewWordPhrase ? '璇嶇粍榛樿涓嶅～璇嶆€? : '閫夋嫨璇嶆€э紙n. / v. / adj. / adv.�?">
-                            <option value="">璇嶇�?�?/option>
-                            <option value="n.">n.</option>
-                            <option value="v.">v.</option>
-                            <option value="adj.">adj.</option>
-                            <option value="adv.">adv.</option>
-                        </select>
-                    </div>
-
-                    <div class="md:col-span-4">
-                        <input v-model="newWord.chinese" @keyup.enter="handleEnter" type="text" placeholder="杈撳叆涓枃閲婁�?(鍙嚜鍔ㄧ敓�?"
-                            class="w-full px-4 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input">
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <button @click="addWord" class="w-full h-full bg-primary hover:bg-primaryDark text-white font-medium py-3 rounded-lg shadow-sm transition active:scale-95">
-                            娣诲�?
-                        </button>
-                    </div>
-                </div>
-
-                <div v-if="newWord.example" class="mt-3 flex items-start gap-2 text-sm jl-muted jl-surface-soft p-3 rounded-lg border jl-border">
-                    <i class="fa-solid fa-quote-left text-black/20 dark:text-white/20 mt-1"></i>
-                    <p>{{ newWord.example }}</p>
-                </div>
-            </section>
-
-            <!-- Tools & Filters -->
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 jl-surface p-3 rounded-xl shadow-sm border jl-border">
-                <div class="flex items-center gap-2 w-full md:w-auto">
-                    <!-- View Toggle -->
-                    <div class="flex jl-surface-soft p-1 rounded-lg border jl-border">
-                        <button @click="viewMode = 'card'"
-                            :class="viewMode === 'card' ? 'jl-surface shadow text-primary border jl-border' : 'jl-muted'"
-                            class="px-3 py-1.5 rounded-md text-sm transition border border-transparent">
-                            <i class="fa-solid fa-grip"></i> 鍗＄�?
-                        </button>
-                        <button @click="viewMode = 'table'"
-                            :class="viewMode === 'table' ? 'jl-surface shadow text-primary border jl-border' : 'jl-muted'"
-                            class="px-3 py-1.5 rounded-md text-sm transition border border-transparent">
-                            <i class="fa-solid fa-list"></i> 琛ㄦ�?
-                        </button>
-                    </div>
-
-                    <div class="h-6 w-px jl-border mx-1"></div>
-
-                    <!-- Sort Dropdown -->
-                    <div class="relative" @click.stop data-sort-menu>
-                        <button @click="showSortMenu = !showSortMenu"
-                                class="px-2 py-1 transition jl-muted hover:text-primary flex items-center gap-1"
-                                title="鎺掑�?>
-                            <i class="fa-solid fa-sort"></i>
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </button>
-                        <div v-if="showSortMenu" class="absolute right-0 top-full mt-1 jl-surface border jl-border rounded-lg shadow-lg py-1 z-10 min-w-[140px]">
-                            <button @click="setSortBy('timestamp', 'desc')"
-                                    :class="sortBy === 'timestamp' && sortOrder === 'desc' ? 'text-primary bg-primary/10' : 'jl-muted'"
-                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
-                                <i class="fa-solid fa-clock"></i> 鏈€鏂颁紭鍏?                            </button>
-                            <button @click="setSortBy('timestamp', 'asc')"
-                                    :class="sortBy === 'timestamp' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
-                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
-                                <i class="fa-solid fa-clock-rotate-left"></i> 鏈€鏃╀紭鍏?                            </button>
-                            <button @click="setSortBy('english', 'asc')"
-                                    :class="sortBy === 'english' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
-                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
-                                <i class="fa-solid fa-sort-alpha-down"></i> A-Z
-                            </button>
-                            <button @click="setSortBy('english', 'desc')"
-                                    :class="sortBy === 'english' && sortOrder === 'desc' ? 'text-primary bg-primary/10' : 'jl-muted'"
-                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
-                                <i class="fa-solid fa-sort-alpha-up"></i> Z-A
-                            </button>
-                            <button @click="setSortBy('pos', 'asc')"
-                                    :class="sortBy === 'pos' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
-                                    class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
-                                <i class="fa-solid fa-tags"></i> 鎸夎瘝鎬?                            </button>
-                        </div>
-                    </div>
-
-                    <button @click="toggleMask"
-                        class="px-2 py-1 transition"
-                        :class="(config.display.meaning && isMasked) ? 'text-primary' : 'jl-muted'"
-                        :disabled="!config.display.meaning"
-                        :title="config.display.meaning ? (isMasked ? '鍙栨秷妯＄硦涓�? : '妯＄硦涓枃') : '宸插叧闂噴涔夋樉绀?">
-                        <i class="fa-solid" :class="isMasked ? 'fa-eye-slash' : 'fa-eye'"></i>
-                    </button>
-
-                    <button @click="exportCSV" class="jl-muted hover:text-green-600 px-2 py-1 transition" title="瀵煎�?CSV">
-                        <i class="fa-solid fa-file-arrow-down"></i>
-                    </button>
-
-                    <button @click="showAiFillModal = true" class="jl-muted hover:text-purple-600 px-2 py-1 transition" title="AI 鏅鸿兘琛ュ厖">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    </button>
-
-                    <button @click="showImportModal = true" class="jl-muted hover:text-blue-600 px-2 py-1 transition" title="瀵煎�?CSV">
-                        <i class="fa-solid fa-file-arrow-up"></i>
-                    </button>
-                </div>
-
-                <div class="flex gap-3 w-full md:w-auto">
-                    <div class="relative flex-1 md:w-64">
-                        <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 jl-muted"></i>
-                        <input v-model="searchQuery" type="text" placeholder="鎼滅�?(鑻辨�?涓�?渚嬪�?璇嶆�?..."
-                            class="w-full pl-9 pr-4 py-2 rounded-lg border-transparent outline-none text-sm transition jl-input focus:ring-2 focus:ring-primary">
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW: CARDS -->
-            <div v-if="viewMode === 'card'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <transition-group name="list">
-                    <div v-for="item in filteredList" :key="item.id"
-                        class="jl-card p-5 shadow-sm hover:shadow-md transition group relative overflow-hidden">
-
-                        <div class="flex justify-between items-start mb-2 gap-2">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <h3 class="text-xl font-bold truncate">{{ item.english }}</h3>
-                                <span v-if="config.display.pos && item.pos"
-                                    class="text-xs px-2 py-0.5 rounded-md jl-chip border jl-border shrink-0">
-                                    {{ item.pos }}
-                                </span>
+            <div class="flex flex-col lg:flex-row gap-6 items-start">
+                <aside class="w-full lg:w-[320px] xl:w-[360px] lg:sticky lg:top-24">
+                    <!-- FILE WORKSPACE -->
+                    <section class="jl-file-panel rounded-2xl shadow-xl border jl-border">
+                        <div class="p-6 space-y-6">
+                            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.4em] jl-muted">Workspace</p>
+                                    <h2 class="text-2xl font-semibold mt-1">CSV 文件库</h2>
+                                    <p class="text-sm jl-muted">{{ folderStatusText }}</p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 text-sm">
+                                    <button @click="openLocalFolder"
+                                            class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-primary transition">
+                                        <i class="fa-solid fa-folder-open"></i> 选择文件夹
+                                    </button>
+                                    <button @click="refreshLocalFiles"
+                                            class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-primary transition"
+                                            :disabled="!directoryState.handle">
+                                        <i class="fa-solid fa-arrows-rotate"></i> 刷新
+                                    </button>
+                                    <button @click="openLocalFile"
+                                            class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-primary transition">
+                                        <i class="fa-solid fa-file-import"></i> 单个CSV
+                                    </button>
+                                    <button @click="saveToLocal"
+                                            class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-green-600 transition"
+                                            :disabled="!activeList.handle">
+                                        <i class="fa-solid fa-floppy-disk"></i> 保存到本地
+                                    </button>
+                                </div>
                             </div>
-                            <button @click="speak(item.english)" class="text-black/30 dark:text-white/30 hover:text-primary transition p-1" title="鏈楄�?>
-                                <i class="fa-solid fa-volume-high"></i>
+
+                            <div class="grid gap-3 sm:grid-cols-3">
+                                <div class="jl-stat-card">
+                                    <p class="text-xs jl-muted">当前文件</p>
+                                    <p class="text-lg font-semibold truncate">{{ activeList.name || '未启用文件' }}</p>
+                                </div>
+                                <div class="jl-stat-card">
+                                    <p class="text-xs jl-muted">文件数量</p>
+                                    <p class="text-2xl font-bold">{{ directoryState.fileCount }}</p>
+                                </div>
+                                <div class="jl-stat-card">
+                                    <p class="text-xs jl-muted">最近修改</p>
+                                    <p class="text-lg font-semibold">{{ activeList.lastModified ? formatDate(activeList.lastModified) : '未定义' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col lg:flex-row gap-3">
+                                <div class="relative flex-1">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 jl-muted"></i>
+                                    <input v-model="fileFilterQuery" type="text" placeholder="搜索 CSV 文件..."
+                                           class="w-full pl-10 pr-4 py-3 rounded-xl border jl-input outline-none text-sm">
+                                </div>
+                                <div class="flex gap-2">
+                                    <span class="jl-pill" :class="directoryState.isLoading ? 'animate-pulse' : ''">
+                                        {{ directoryState.isLoading ? '正在加载...' : '已全部列出' }}
+                                    </span>
+                                    <span class="jl-pill" v-if="visibleFiles.length">
+                                        {{ visibleFiles.length }} / {{ filteredLocalFiles.length }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="jl-file-list" @scroll="handleFileScroll">
+                                <template v-if="directoryState.isLoading">
+                                    <div class="file-skeleton" v-for="n in 6" :key="'skeleton-'+n"></div>
+                                </template>
+                                <template v-else-if="visibleFiles.length">
+                                    <button v-for="file in visibleFiles" :key="file.id"
+                                            @click="loadLocalFile(file)"
+                                            class="jl-file-row"
+                                            :class="{ 'is-active': activeList.name === file.name }">
+                                        <div class="min-w-0">
+                                            <p class="font-semibold truncate">{{ file.name }}</p>
+                                            <p class="text-xs jl-muted">{{ formatFileMeta(file) }}</p>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="jl-pill">CSV</span>
+                                            <i class="fa-solid fa-circle-play text-primary"></i>
+                                        </div>
+                                    </button>
+                                </template>
+                                <div v-else class="text-center py-12 jl-muted text-sm">
+                                    没有找到匹配 "{{ fileFilterQuery }}" 的文件，请先打开一个应用文件夹。
+                                </div>
+                            </div>
+
+                            <button v-if="visibleFileCount < filteredLocalFiles.length"
+                                    @click="loadMoreFiles"
+                                    class="w-full text-sm jl-chip border jl-border py-2 rounded-lg">
+                                加载更多
+                            </button>
+                        </div>
+                    </section>
+                </aside>
+
+                <div class="flex-1 flex flex-col gap-6">
+                    <!-- Input Section (Main View) -->
+                    <section class="jl-surface rounded-xl shadow p-6 border jl-border">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold flex items-center gap-2">
+                                <i class="fa-solid fa-plus-circle text-primary"></i> 快速录入
+                            </h2>
+                            <span class="text-xs jl-muted jl-chip px-2 py-1 rounded border jl-border">
+                                 {{ config.engine === 'ai' ? 'AI 增强' : '基础模式' }}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                            <div class="md:col-span-4 relative group">
+                                <input v-model="newWord.english" @keyup.enter="handleEnter" type="text" placeholder="输入英文单词或词组..."
+                                    class="w-full pl-4 pr-10 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input">
+                                <button @click="translate" :disabled="isTranslating"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 jl-muted hover:text-primary p-1 transition"
+                                    title="翻译">
+                                    <div v-if="isTranslating" class="loader"></div>
+                                    <i v-else class="fa-solid fa-wand-magic-sparkles"></i>
+                                </button>
+                            </div>
+
+                            <!-- POS -->
+                            <div class="md:col-span-2">
+                                <select v-model="newWord.pos" :disabled="isNewWordPhrase"
+                                    class="w-full px-4 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input"
+                                    :title="isNewWordPhrase ? '词组默认不填词性' : '选择词性（n. / v. / adj. / adv.）'">
+                                    <option value="">词性</option>
+                                    <option value="n.">n.</option>
+                                    <option value="v.">v.</option>
+                                    <option value="adj.">adj.</option>
+                                    <option value="adv.">adv.</option>
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-4">
+                                <input v-model="newWord.chinese" @keyup.enter="handleEnter" type="text" placeholder="输入中文释义(可自动生成)"
+                                    class="w-full px-4 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <button @click="addWord" class="w-full h-full bg-primary hover:bg-primaryDark text-dark font-medium py-3 rounded-lg shadow-sm transition active:scale-95">
+                                    添加
+                                </button>
+                            </div>
+                        </div>
+
+                        <div v-if="newWord.example" class="mt-3 flex items-start gap-2 text-sm jl-muted jl-surface-soft p-3 rounded-lg border jl-border">
+                            <i class="fa-solid fa-quote-left text-black/20 dark:text-white/20 mt-1"></i>
+                            <p>{{ newWord.example }}</p>
+                        </div>
+                    </section>
+
+                    <!-- Tools & Filters -->
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 jl-surface p-3 rounded-xl shadow-sm border jl-border">
+                        <div class="flex items-center gap-2 w-full md:w-auto">
+                            <!-- View Toggle -->
+                            <div class="flex jl-surface-soft p-1 rounded-lg border jl-border">
+                                <button @click="viewMode = 'card'"
+                                    :class="viewMode === 'card' ? 'jl-surface shadow text-primary border jl-border' : 'jl-muted'"
+                                    class="px-3 py-1.5 rounded-md text-sm transition border border-transparent">
+                                    <i class="fa-solid fa-grip"></i> 卡片
+                                </button>
+                                <button @click="viewMode = 'table'"
+                                    :class="viewMode === 'table' ? 'jl-surface shadow text-primary border jl-border' : 'jl-muted'"
+                                    class="px-3 py-1.5 rounded-md text-sm transition border border-transparent">
+                                    <i class="fa-solid fa-list"></i> 表格
+                                </button>
+                            </div>
+
+                            <div class="h-6 w-px jl-border mx-1"></div>
+
+                            <!-- Sort Dropdown -->
+                            <div class="relative" @click.stop data-sort-menu>
+                                <button @click="showSortMenu = !showSortMenu"
+                                        class="px-2 py-1 transition jl-muted hover:text-primary flex items-center gap-1"
+                                        title="排序">
+                                    <i class="fa-solid fa-sort"></i>
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </button>
+                                <div v-if="showSortMenu" class="absolute right-0 top-full mt-1 jl-surface border jl-border rounded-lg shadow-lg py-1 z-10 min-w-[140px]">
+                                    <button @click="setSortBy('timestamp', 'desc')"
+                                            :class="sortBy === 'timestamp' && sortOrder === 'desc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                            class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                        <i class="fa-solid fa-clock"></i> 最新优先
+                                    </button>
+                                    <button @click="setSortBy('timestamp', 'asc')"
+                                            :class="sortBy === 'timestamp' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                            class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                        <i class="fa-solid fa-clock-rotate-left"></i> 最旧优先
+                                    </button>
+                                    <button @click="setSortBy('english', 'asc')"
+                                            :class="sortBy === 'english' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                            class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                        <i class="fa-solid fa-sort-alpha-down"></i> A-Z
+                                    </button>
+                                    <button @click="setSortBy('english', 'desc')"
+                                            :class="sortBy === 'english' && sortOrder === 'desc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                            class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                        <i class="fa-solid fa-sort-alpha-up"></i> Z-A
+                                    </button>
+                                    <button @click="setSortBy('pos', 'asc')"
+                                            :class="sortBy === 'pos' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                            class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
+                                        <i class="fa-solid fa-tags"></i> 按词性
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button @click="toggleMask"
+                                class="px-2 py-1 transition"
+                                :class="(config.display.meaning && isMasked) ? 'text-primary' : 'jl-muted'"
+                                :disabled="!config.display.meaning"
+                                :title="config.display.meaning ? (isMasked ? '取消模糊中文' : '模糊中文') : '已关闭释义显示'">
+                                <i class="fa-solid" :class="isMasked ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+
+                            <button @click="exportCSV" class="jl-muted hover:text-green-600 px-2 py-1 transition" title="导出CSV">
+                                <i class="fa-solid fa-file-arrow-down"></i>
+                            </button>
+
+                            <button @click="showAiFillModal = true" class="jl-muted hover:text-purple-600 px-2 py-1 transition" title="AI 智能填充">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </button>
+
+                            <button @click="showImportModal = true" class="jl-muted hover:text-blue-600 px-2 py-1 transition" title="导入CSV">
+                                <i class="fa-solid fa-file-arrow-up"></i>
                             </button>
                         </div>
 
-                        <div v-if="config.display.meaning"
-                            class="mb-3"
-                            :class="[{ 'blur-sm cursor-pointer hover:blur-none transition': isMasked }, 'jl-muted']"
-                            @click="isMasked && (isMasked = false)">
-                            {{ item.chinese }}
-                        </div>
-
-                        <div v-if="config.display.example && item.example"
-                            class="text-xs jl-muted italic border-l-2 pl-2 mb-2 line-clamp-2"
-                            :class="isDarkMode ? 'border-white/20' : 'border-black/10'">
-                            {{ item.example }}
-                        </div>
-
-                        <div class="flex justify-between items-end mt-2 pt-2 border-t jl-border">
-                            <span v-if="config.display.date" class="text-xs jl-muted">{{ formatDate(item.timestamp) }}</span>
-                            <span v-else></span>
-                            <button @click="deleteWord(item.id)"
-                                class="text-black/30 dark:text-white/30 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
-                                title="鍒犻�?>
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                        <div class="flex gap-3 w-full md:w-auto">
+                            <div class="relative flex-1 md:w-64">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 jl-muted"></i>
+                                <input v-model="searchQuery" type="text" placeholder="搜索(英文/中文/例句/词性...)"
+                                    class="w-full pl-9 pr-4 py-2 rounded-lg border-transparent outline-none text-sm transition jl-input focus:ring-2 focus:ring-primary">
+                            </div>
                         </div>
                     </div>
-                </transition-group>
-            </div>
 
-            <!-- VIEW: TABLE -->
-            <div v-else class="jl-surface rounded-xl shadow-sm border jl-border overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="jl-surface-soft uppercase tracking-wider text-xs jl-muted border-b jl-border">
-                            <tr>
-                                <th class="px-6 py-3 font-semibold">鍗曡�?(English)</th>
-                                <th v-if="config.display.pos" class="px-6 py-3 font-semibold whitespace-nowrap">璇嶆�?/th>
-                                <th v-if="config.display.meaning" class="px-6 py-3 font-semibold">閲婁�?(Meaning)</th>
-                                <th v-if="config.display.example" class="px-6 py-3 font-semibold hidden md:table-cell">渚嬪�?(Example)</th>
-                                <th v-if="config.display.date" class="px-6 py-3 font-semibold hidden lg:table-cell whitespace-nowrap">鏃ユ�?/th>
-                                <th class="px-6 py-3 font-semibold text-right">鎿嶄�?/th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y jl-border">
-                            <tr v-for="item in filteredList" :key="item.id" class="hover:bg-black/5 dark:hover:bg-white/5 transition group">
-                                <td class="px-6 py-3 font-bold">{{ item.english }}</td>
+                    <!-- VIEW: CARDS -->
+                    <div v-if="viewMode === 'card'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <transition-group name="list">
+                            <div v-for="item in filteredList" :key="item.id"
+                                class="jl-card p-5 shadow-sm hover:shadow-md transition group relative overflow-hidden">
 
-                                <td v-if="config.display.pos" class="px-6 py-3">
-                                    <span v-if="item.pos" class="text-xs px-2 py-0.5 rounded-md jl-chip border jl-border">{{ item.pos }}</span>
-                                    <span v-else class="jl-muted">-</span>
-                                </td>
-
-                                <td v-if="config.display.meaning" class="px-6 py-3 jl-muted"
-                                    :class="isMasked ? 'blur-sm cursor-pointer hover:blur-none transition' : ''"
-                                    @click="isMasked && (isMasked = false)">
-                                    {{ item.chinese }}
-                                </td>
-
-                                <td v-if="config.display.example" class="px-6 py-3 jl-muted italic hidden md:table-cell max-w-xs truncate">
-                                    {{ item.example }}
-                                </td>
-
-                                <td v-if="config.display.date" class="px-6 py-3 jl-muted hidden lg:table-cell whitespace-nowrap">
-                                    {{ formatDate(item.timestamp) }}
-                                </td>
-
-                                <td class="px-6 py-3 text-right">
-                                    <div class="flex justify-end gap-3">
-                                        <button @click="speak(item.english)" class="jl-muted hover:text-primary" title="鏈楄�?>
+                                <div class="flex justify-between items-start mb-2 gap-2">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <h3 class="text-xl font-bold truncate">{{ item.english }}</h3>
+                                        <span v-if="config.display.pos && item.pos"
+                                            class="text-xs px-2 py-0.5 rounded-md jl-chip border jl-border shrink-0">
+                                            {{ item.pos }}
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button @click="speak(item.english)" class="text-black/30 dark:text-white/30 hover:text-primary transition p-1" title="朗读英文">
                                             <i class="fa-solid fa-volume-high"></i>
                                         </button>
-                                        <button @click="deleteWord(item.id)" class="jl-muted hover:text-red-500" title="鍒犻�?>
-                                            <i class="fa-solid fa-trash"></i>
+                                        <button v-if="config.display.example && item.example" @click="speak(item.example)" class="text-black/30 dark:text-white/30 hover:text-primary transition p-1" title="朗读例句">
+                                            <i class="fa-solid fa-book-open"></i>
                                         </button>
                                     </div>
-                                </td>
-                            </tr>
+                                </div>
 
-                            <tr v-if="filteredList.length === 0">
-                                <td :colspan="2 + (config.display.pos?1:0) + (config.display.meaning?1:0) + (config.display.example?1:0) + (config.display.date?1:0)"
-                                    class="px-6 py-8 text-center jl-muted">
-                                    鏆傛棤鍗曡瘝锛岃鍏堟坊鍔犮�?                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                <div v-if="config.display.meaning"
+                                    class="mb-3 flex items-start gap-2">
+                                    <div
+                                        class="flex-1"
+                                        :class="[{ 'blur-sm cursor-pointer hover:blur-none transition': isMasked }, 'jl-muted']"
+                                        @click="isMasked && (isMasked = false)">
+                                        {{ item.chinese }}
+                                    </div>
+                                    <button @click="speak(item.chinese || item.english)" class="text-black/30 dark:text-white/30 hover:text-primary transition p-1 shrink-0" title="朗读释义">
+                                        <i class="fa-solid fa-volume-low"></i>
+                                    </button>
+                                </div>
+
+                                <div v-if="config.display.example && item.example"
+                                    class="text-xs jl-muted italic border-l-2 pl-2 mb-2 line-clamp-2"
+                                    :class="isDarkMode ? 'border-white/20' : 'border-black/10'">
+                                    {{ item.example }}
+                                </div>
+
+                                <div class="flex justify-between items-end mt-2 pt-2 border-t jl-border">
+                                    <span v-if="config.display.date" class="text-xs jl-muted">{{ formatDate(item.timestamp) }}</span>
+                                    <span v-else></span>
+                                    <button @click="deleteWord(item.id)"
+                                        class="text-black/30 dark:text-white/30 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
+                                        title="删除">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </transition-group>
+                    </div>
+
+                    <!-- VIEW: TABLE -->
+                    <div v-else class="jl-surface rounded-xl shadow-sm border jl-border overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="jl-surface-soft uppercase tracking-wider text-xs jl-muted border-b jl-border">
+                                    <tr>
+                                        <th class="px-6 py-3 font-semibold">单词(English)</th>
+                                        <th v-if="config.display.pos" class="px-6 py-3 font-semibold whitespace-nowrap">词性</th>
+                                        <th v-if="config.display.meaning" class="px-6 py-3 font-semibold">释义(Meaning)</th>
+                                        <th v-if="config.display.example" class="px-6 py-3 font-semibold hidden md:table-cell">例句(Example)</th>
+                                        <th v-if="config.display.date" class="px-6 py-3 font-semibold hidden lg:table-cell whitespace-nowrap">日期(Date)</th>
+                                        <th class="px-6 py-3 font-semibold text-right">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y jl-border">
+                                    <tr v-for="item in filteredList" :key="item.id" class="hover:bg-black/5 dark:hover:bg-white/5 transition group">
+                                        <td class="px-6 py-3 font-bold">{{ item.english }}</td>
+
+                                        <td v-if="config.display.pos" class="px-6 py-3">
+                                            <span v-if="item.pos" class="text-xs px-2 py-0.5 rounded-md jl-chip border jl-border">{{ item.pos }}</span>
+                                            <span v-else class="jl-muted">-</span>
+                                        </td>
+
+                                        <td v-if="config.display.meaning" class="px-6 py-3 jl-muted"
+                                            :class="isMasked ? 'blur-sm cursor-pointer hover:blur-none transition' : ''"
+                                            @click="isMasked && (isMasked = false)">
+                                            {{ item.chinese }}
+                                        </td>
+
+                                        <td v-if="config.display.example" class="px-6 py-3 jl-muted italic hidden md:table-cell max-w-xs truncate">
+                                            {{ item.example }}
+                                        </td>
+
+                                        <td v-if="config.display.date" class="px-6 py-3 jl-muted hidden lg:table-cell whitespace-nowrap">
+                                            {{ formatDate(item.timestamp) }}
+                                        </td>
+
+                                        <td class="px-6 py-3 text-right">
+                                            <div class="flex justify-end gap-3">
+                                                <button @click="speak(item.english)" class="jl-muted hover:text-primary" title="朗读">
+                                                    <i class="fa-solid fa-volume-high"></i>
+                                                </button>
+                                                <button @click="deleteWord(item.id)" class="jl-muted hover:text-red-500" title="删除">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr v-if="filteredList.length === 0">
+                                        <td :colspan="2 + (config.display.pos?1:0) + (config.display.meaning?1:0) + (config.display.example?1:0) + (config.display.date?1:0)"
+                                            class="px-6 py-8 text-center jl-muted">
+                                            暂无单词，请先添加。
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <!-- FILE WORKSPACE -->
-            <section class="jl-file-panel rounded-2xl shadow-xl border jl-border mt-10">
-                <div class="p-6 space-y-6">
-                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.4em] jl-muted">Workspace</p>
-                            <h2 class="text-2xl font-semibold mt-1">CSV 鏂囦欢搴?</h2>
-                            <p class="text-sm jl-muted">{{ folderStatusText }}</p>
-                        </div>
-                        <div class="flex flex-wrap gap-2 text-sm">
-                            <button @click="openLocalFolder"
-                                    class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-primary transition">
-                                <i class="fa-solid fa-folder-open"></i> 閫夋嫨鏂囨。鍖?
-                            </button>
-                            <button @click="refreshLocalFiles"
-                                    class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-primary transition"
-                                    :disabled="!directoryState.handle">
-                                <i class="fa-solid fa-arrows-rotate"></i> 鍒锋�?
-                            </button>
-                            <button @click="openLocalFile"
-                                    class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-primary transition">
-                                <i class="fa-solid fa-file-import"></i> 鍗曚�?CSV
-                            </button>
-                            <button @click="saveToLocal"
-                                    class="px-4 py-2 rounded-full jl-chip border jl-border flex items-center gap-2 hover:text-green-600 transition"
-                                    :disabled="!activeList.handle">
-                                <i class="fa-solid fa-floppy-disk"></i> 鎻愪氦鍒颁綅�?
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="grid gap-3 sm:grid-cols-3">
-                        <div class="jl-stat-card">
-                            <p class="text-xs jl-muted">褰撳墠鏂囦欢</p>
-                            <p class="text-lg font-semibold truncate">{{ activeList.name || '鏈惎鐢ㄦ枃�?' }}</p>
-                        </div>
-                        <div class="jl-stat-card">
-                            <p class="text-xs jl-muted">鏂囦欢鏁伴噺</p>
-                            <p class="text-2xl font-bold">{{ directoryState.fileCount }}</p>
-                        </div>
-                        <div class="jl-stat-card">
-                            <p class="text-xs jl-muted">鏈€杩戝閲忓挩�?</p>
-                            <p class="text-lg font-semibold">{{ activeList.lastModified ? formatDate(activeList.lastModified) : '鏈畾涔?' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col lg:flex-row gap-3">
-                        <div class="relative flex-1">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 jl-muted"></i>
-                            <input v-model="fileFilterQuery" type="text" placeholder="鎼滅�?CSV 鏂囦�?.."
-                                   class="w-full pl-10 pr-4 py-3 rounded-xl border jl-input outline-none text-sm">
-                        </div>
-                        <div class="flex gap-2">
-                            <span class="jl-pill" :class="directoryState.isLoading ? 'animate-pulse' : ''">
-                                {{ directoryState.isLoading ? '姝ｅ湪鍖呭惈...' : '宸插叏娓呭崟' }}
-                            </span>
-                            <span class="jl-pill" v-if="visibleFiles.length">
-                                {{ visibleFiles.length }} / {{ filteredLocalFiles.length }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="jl-file-list" @scroll="handleFileScroll">
-                        <template v-if="directoryState.isLoading">
-                            <div class="file-skeleton" v-for="n in 6" :key="'skeleton-'+n"></div>
-                        </template>
-                        <template v-else-if="visibleFiles.length">
-                            <button v-for="file in visibleFiles" :key="file.id"
-                                    @click="loadLocalFile(file)"
-                                    class="jl-file-row"
-                                    :class="{ 'is-active': activeList.name === file.name }">
-                                <div class="min-w-0">
-                                    <p class="font-semibold truncate">{{ file.name }}</p>
-                                    <p class="text-xs jl-muted">{{ formatFileMeta(file) }}</p>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="jl-pill">CSV</span>
-                                    <i class="fa-solid fa-circle-play text-primary"></i>
-                                </div>
-                            </button>
-                        </template>
-                        <div v-else class="text-center py-12 jl-muted text-sm">
-                            娌℃湁鎵惧埌鍖呭�?"{{ fileFilterQuery }}" 鐨勯厤缃?鎵€鏈夌増鏈渶鍏堝紑鍚竴涓簲鐢ㄦ枃浠跺す銆?
-                        </div>
-                    </div>
-
-                    <button v-if="visibleFileCount < filteredLocalFiles.length"
-                            @click="loadMoreFiles"
-                            class="w-full text-sm jl-chip border jl-border py-2 rounded-lg">
-                        鍔犺浇鏇村
-                    </button>
-                </div>
-            </section>
 
         </main>
 
@@ -511,15 +535,15 @@
                 <div class="w-16 h-16 jl-surface-soft text-primary rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border jl-border">
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
-                <h3 class="text-xl font-bold mb-2">閫夋嫨娴嬭瘯妯″紡</h3>
-                <p class="jl-muted text-sm mb-6">鏈娴嬭瘯灏嗗寘鍚?{{ Math.min(20, filteredList.length) }} 涓殢鏈哄崟�?/p>
+                <h3 class="text-xl font-bold mb-2">选择测试模式</h3>
+                <p class="jl-muted text-sm mb-6">本次测试将包含 {{ Math.min(20, filteredList.length) }} 个随机单词</p>
 
                 <div class="space-y-3">
                     <button @click="startQuiz('zh2en')"
                         class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
                         <div class="text-left">
-                            <div class="font-bold group-hover:text-primary">鎷煎啓娴嬭瘯</div>
-                            <div class="text-xs jl-muted">鐪嬩腑鏂?�?鍐欒嫳鏂?/div>
+                            <div class="font-bold group-hover:text-primary">默写测试</div>
+                            <div class="text-xs jl-muted">看中文，写英文</div>
                         </div>
                         <i class="fa-solid fa-pen text-black/20 dark:text-white/30 group-hover:text-primary"></i>
                     </button>
@@ -527,8 +551,8 @@
                     <button @click="startQuiz('en2zh')"
                         class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
                         <div class="text-left">
-                            <div class="font-bold group-hover:text-primary">鍥炲繂娴嬭瘯</div>
-                            <div class="text-xs jl-muted">鐪嬭嫳鏂?�?鍐欎腑鏂?/div>
+                            <div class="font-bold group-hover:text-primary">翻译测试</div>
+                            <div class="text-xs jl-muted">看英文，写中文</div>
                         </div>
                         <i class="fa-solid fa-language text-black/20 dark:text-white/30 group-hover:text-primary"></i>
                     </button>
@@ -540,18 +564,18 @@
         <div v-if="showSettings" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showSettings = false">
             <div class="jl-surface w-full max-w-md rounded-xl shadow-xl p-6 border jl-border">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold">璁剧�?/h3>
-                    <button @click="showSettings = false" class="jl-muted hover:text-black dark:hover:text-white" title="鍏抽�?>
+                    <h3 class="text-lg font-bold">设置</h3>
+                    <button @click="showSettings = false" class="jl-muted hover:text-black dark:hover:text-white" title="关闭">
                         <i class="fa-solid fa-times"></i>
                     </button>
                 </div>
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium mb-2">缈昏瘧寮曟搸</label>
+                        <label class="block text-sm font-medium mb-2">翻译引擎</label>
                         <select v-model="config.engine" class="w-full p-2 rounded border jl-input outline-none focus:ring-2 focus:ring-primary">
-                            <option value="free">鍏嶈垂鍩虹 (MyMemory)</option>
-                            <option value="ai">AI澧炲己锛坅pi�?/option>
+                            <option value="free">免费基础 (MyMemory)</option>
+                            <option value="ai">AI 增强（需 API）</option>
                         </select>
                     </div>
 
@@ -565,33 +589,28 @@
                     </div>
 
                     <div class="p-3 jl-surface-soft rounded border jl-border">
-                        <div class="text-sm font-medium mb-3">鏄剧ず瀛楁�?/div>
-
+                        <div class="text-sm font-medium mb-3">显示字段</div>
                         <label class="flex items-center justify-between py-1">
-                            <span class="text-sm">鏄剧ず璇嶆€э紙n. / v. / adj. / adv.�?/span>
+                            <span class="text-sm">显示词性（n. / v. / adj. / adv.）</span>
                             <input type="checkbox" v-model="config.display.pos" class="h-4 w-4 accent-indigo-500">
                         </label>
-
                         <label class="flex items-center justify-between py-1">
-                            <span class="text-sm">鏄剧ず閲婁箟锛堜腑鏂囷級</span>
+                            <span class="text-sm">显示释义（中文）</span>
                             <input type="checkbox" v-model="config.display.meaning" class="h-4 w-4 accent-indigo-500">
                         </label>
-
                         <label class="flex items-center justify-between py-1">
-                            <span class="text-sm">鏄剧ず渚嬪彞</span>
+                            <span class="text-sm">显示例句</span>
                             <input type="checkbox" v-model="config.display.example" class="h-4 w-4 accent-indigo-500">
                         </label>
-
                         <label class="flex items-center justify-between py-1">
-                            <span class="text-sm">鏄剧ず鏃ユ湡</span>
+                            <span class="text-sm">显示日期</span>
                             <input type="checkbox" v-model="config.display.date" class="h-4 w-4 accent-indigo-500">
                         </label>
-
-                        <p class="text-xs jl-muted mt-2">鎻愮ず锛氳瘝缁勶紙鍖呭惈绌烘牸锛夐粯璁や笉濉瘝鎬с€?/p>
+                        <p class="text-xs jl-muted mt-2">提示：词组（含空格）默认不填词性。</p>
                     </div>
 
                     <button @click="saveConfig" class="w-full bg-primary hover:bg-primaryDark text-white py-2 rounded mt-2 transition">
-                        淇濆�?
+                        保存
                     </button>
                 </div>
             </div>
@@ -601,28 +620,28 @@
         <div v-if="showImportModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showImportModal = false">
             <div class="jl-surface w-full max-w-md rounded-xl shadow-xl p-6 border jl-border">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold">瀵煎叆鍗曡瘝</h3>
-                    <button @click="showImportModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="鍏抽�?>
+                    <h3 class="text-lg font-bold">导入单词</h3>
+                    <button @click="showImportModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="关闭">
                         <i class="fa-solid fa-times"></i>
                     </button>
                 </div>
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium mb-3">閫夋嫨瀵煎叆妯″紡</label>
+                        <label class="block text-sm font-medium mb-3">选择导入模式</label>
                         <div class="space-y-2">
                             <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
                                 <input type="radio" v-model="importMode" value="replace" class="mr-3 accent-primary">
                                 <div>
-                                    <div class="font-medium">瀹屽叏瑕嗙洊妯″紡</div>
-                                    <div class="text-xs jl-muted">娓呯┖鐜版湁鍗曡瘝锛屽鍏ユ柊鏁版嵁</div>
+                                    <div class="font-medium">完全覆盖模式</div>
+                                    <div class="text-xs jl-muted">清空现有单词，导入新数据</div>
                                 </div>
                             </label>
                             <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
                                 <input type="radio" v-model="importMode" value="merge" class="mr-3 accent-primary">
                                 <div>
-                                    <div class="font-medium">澧為噺妯″紡</div>
-                                    <div class="text-xs jl-muted">淇濈暀鐜版湁鍗曡瘝锛岃嚜鍔ㄥ幓閲嶆坊鍔犳柊鍗曡�?/div>
+                                    <div class="font-medium">增量模式</div>
+                                    <div class="text-xs jl-muted">保留现有单词，自动去重添加新单词</div>
                                 </div>
                             </label>
                         </div>
@@ -633,8 +652,8 @@
                             <div class="flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
                                 <div class="text-center">
                                     <i class="fa-solid fa-cloud-arrow-up text-2xl jl-muted mb-2"></i>
-                                    <p class="text-sm font-medium">鐐瑰嚮閫夋嫨 CSV 鏂囦�?/p>
-                                    <p class="text-xs jl-muted">鎴栨嫋鎷芥枃浠跺埌姝ゅ</p>
+                                    <p class="text-sm font-medium">点击选择 CSV 文件</p>
+                                    <p class="text-xs jl-muted">或拖拽文件到此处</p>
                                 </div>
                             </div>
                             <input type="file" @change="handleImportFile" accept=".csv" class="hidden" ref="importFileInput">
@@ -659,8 +678,8 @@
         <div v-if="showAiFillModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showAiFillModal = false">
             <div class="jl-surface w-full max-w-md rounded-xl shadow-xl p-6 border jl-border">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold">AI 鏅鸿兘琛ュ厖</h3>
-                    <button @click="showAiFillModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="鍏抽�?>
+                    <h3 class="text-lg font-bold">AI 智能填充</h3>
+                    <button @click="showAiFillModal = false" class="jl-muted hover:text-black dark:hover:text-white" title="关闭">
                         <i class="fa-solid fa-times"></i>
                     </button>
                 </div>
@@ -669,17 +688,17 @@
                     <div class="p-4 jl-surface-soft rounded-lg border jl-border">
                         <div class="flex items-center gap-2 mb-2">
                             <i class="fa-solid fa-wand-magic-sparkles text-primary"></i>
-                            <span class="font-medium">灏嗚琛ュ厖鐨勫唴�?/span>
+                            <span class="font-medium">将要补充的内容</span>
                         </div>
                         <ul class="text-sm jl-muted space-y-1">
-                            <li>�?缂哄け鐨勪腑鏂囬噴涔?/li>
-                            <li>�?缂哄け鐨勮瘝鎬ф爣�?/li>
-                            <li>�?缂哄け鐨勪緥�?/li>
+                            <li>缺少的中文释义</li>
+                            <li>缺少的词性标记</li>
+                            <li>缺少的例句</li>
                         </ul>
                     </div>
 
                     <div class="text-sm jl-muted">
-                        鎵惧�?<span class="font-bold text-primary">{{ incompleteWords.length }}</span> 涓渶瑕佽ˉ鍏呯殑鍗曡�?
+                        找到 <span class="font-bold text-primary">{{ incompleteWords.length }}</span> 个需要补充的单词
                     </div>
 
                     <div v-if="aiFillProgress.show" class="space-y-2">
@@ -696,14 +715,14 @@
                     <div class="flex gap-3">
                         <button @click="showAiFillModal = false"
                                 class="flex-1 px-4 py-2 border rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition jl-border">
-                            鍙栨�?
+                            取消
                         </button>
                         <button @click="startAiFill" :disabled="aiFillProgress.show || incompleteWords.length === 0"
                                 class="flex-1 bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg transition disabled:opacity-50">
-                            <span v-if="!aiFillProgress.show">寮€濮嬭ˉ�?/span>
+                            <span v-if="!aiFillProgress.show">开始补全</span>
                             <span v-else class="flex items-center justify-center gap-2">
                                 <div class="loader"></div>
-                                澶勭悊涓?..
+                                处理中...
                             </span>
                         </button>
                     </div>
@@ -713,7 +732,48 @@
 
     </div>
 
-        <script type='module' src='./src/main.js'></script>
+    <script type="module">
+        const loadVueScript = (src) => new Promise((resolve, reject) => {
+            const el = document.createElement('script');
+            el.src = src;
+            el.async = true;
+            el.onload = () => resolve(true);
+            el.onerror = () => reject(new Error('加载失败: ' + src));
+            document.head.appendChild(el);
+        });
+
+        const ensureVueReady = async () => {
+            if (window.Vue) return;
+            const cdnList = [
+                'https://unpkg.com/vue@3/dist/vue.global.prod.js',
+                'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js'
+            ];
+
+            for (const url of cdnList) {
+                try {
+                    await loadVueScript(url);
+                    if (window.Vue) return;
+                } catch (error) {
+                    console.warn(error.message);
+                }
+            }
+
+            throw new Error('无法加载 Vue，请检查网络连接');
+        };
+
+        (async () => {
+            try {
+                await ensureVueReady();
+                await import('./src/main.js');
+            } catch (error) {
+                console.error(error);
+                const toast = document.createElement('div');
+                toast.textContent = '页面初始化失败：' + error.message;
+                toast.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:10px 16px;border-radius:10px;background:#991b1b;color:#fff;font-size:14px;box-shadow:0 8px 20px rgba(0,0,0,0.2);z-index:9999;';
+                document.body.appendChild(toast);
+            }
+        })();
+    </script>
 
 </body>
 </html>
