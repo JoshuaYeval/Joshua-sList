@@ -10,7 +10,16 @@ const POS_MAP = new Map([
     ['adjective', 'adj.'],
     ['adv', 'adv.'],
     ['adv.', 'adv.'],
-    ['adverb', 'adv.']
+    ['adverb', 'adv.'],
+    ['pron', 'pron.'],
+    ['pron.', 'pron.'],
+    ['pronoun', 'pron.'],
+    ['prep', 'prep.'],
+    ['prep.', 'prep.'],
+    ['preposition', 'prep.'],
+    ['conj', 'conj.'],
+    ['conj.', 'conj.'],
+    ['conjunction', 'conj.']
 ]);
 
 export const isPhrase = (english) => /\s/.test((english || '').trim());

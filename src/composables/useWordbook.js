@@ -13,9 +13,12 @@ export const useWordbook = () => {
     const showQuizSetup = ref(false);
     const showImportModal = ref(false);
     const showAiFillModal = ref(false);
+    const showEditModal = ref(false);
     const showSortMenu = ref(false);
     const isMasked = ref(false);
     const isTranslating = ref(false);
+
+    const editingWord = reactive({ id: '', english: '', pos: '', chinese: '', example: '' });
 
     const importMode = ref('merge');
     const importFileInput = ref(null);
@@ -166,6 +169,25 @@ export const useWordbook = () => {
         }
     };
 
+    const openEditModal = (word) => {
+        Object.assign(editingWord, { ...word });
+        showEditModal.value = true;
+    };
+
+    const saveEdit = () => {
+        const index = wordList.value.findIndex(w => w.id === editingWord.id);
+        if (index !== -1) {
+            wordList.value[index] = {
+                ...wordList.value[index],
+                english: editingWord.english.trim(),
+                pos: isPhrase(editingWord.english) ? '' : normalizePos(editingWord.pos),
+                chinese: editingWord.chinese.trim(),
+                example: editingWord.example.trim()
+            };
+        }
+        showEditModal.value = false;
+    };
+
     const translate = async () => {
         if (!newWord.english) return;
         isTranslating.value = true;
@@ -190,8 +212,8 @@ export const useWordbook = () => {
         const prompt = [
             'For the English input, output ONLY valid JSON (no markdown).',
             'Rules:',
-            '- "pos" must be one of ["n.","v.","adj.","adv."] or "" when the input is a phrase.',
-            '- "meaning" must be a concise Chinese meaning.',
+            '- "pos" must be one of ["n.","v.","adj.","adv.","pron.","prep.","conj"] or "" when the input is a phrase.',
+            '- "meaning" must be a concise Simplified Chinese meaning.',
             '- "example" must be a short English sentence using the input.',
             'Return format: {"pos":"","meaning":"","example":""}',
             `Input: "${english}"`
@@ -384,8 +406,8 @@ export const useWordbook = () => {
         const prompt = [
             'For the English input, output ONLY valid JSON (no markdown).',
             'Rules:',
-            '- "pos" must be one of ["n.","v.","adj.","adv."] or "" when it is a phrase.',
-            '- "meaning" must be a concise Chinese meaning.',
+            '- "pos" must be one of ["n.","v.","adj.","adv.","pron.","prep.","conj"] or "" when it is a phrase.',
+            '- "meaning" must be a concise Simplified Chinese meaning.',
             '- "example" must be a short English sentence using the input.',
             '- Only fill missing fields, keep existing values.',
             `Current data: {"pos":"${word.pos || ''}","meaning":"${word.chinese || ''}","example":"${word.example || ''}"}`,
@@ -515,6 +537,7 @@ export const useWordbook = () => {
         showQuizSetup,
         showImportModal,
         showAiFillModal,
+        showEditModal,
         showSortMenu,
         isMasked,
         isTranslating,
@@ -528,8 +551,11 @@ export const useWordbook = () => {
         filteredList,
         incompleteWords,
         isNewWordPhrase,
+        editingWord,
         addWord,
         deleteWord,
+        openEditModal,
+        saveEdit,
         translate,
         handleEnter,
         speak,
