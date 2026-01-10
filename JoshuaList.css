@@ -1,6 +1,5 @@
 @font-face {
     font-family: 'LXGW-WenKai-Mono-GB';
-    /* src: url('file:///D:/font/LXGWWenKaiMonoGBScreen.ttf') format('truetype'); */
     src: local('LXGW WenKai Mono GB'), local('LXGWWenKaiMonoGBScreen');
     font-weight: normal;
     font-style: normal;
@@ -8,6 +7,7 @@
     unicode-range: U+4E00-9FFF;
 }
 
+/* 1. 修改全局字体配置：优先使用 Consolas (西文) 和 思源宋体 (中文) */
 body,
 input,
 button,
@@ -15,15 +15,8 @@ textarea,
 select,
 table {
     font-family:
-        'LXGW-WenKai-Mono-GB',
         Consolas,
         '思源宋体',
-        system-ui,
-        -apple-system,
-        'Segoe UI',
-        Roboto,
-        Helvetica,
-        Arial,
         sans-serif !important;
 }
 
@@ -42,6 +35,7 @@ table {
 }
 .fa-brands { font-family: "Font Awesome 6 Brands" !important; font-weight: 400; }
 
+/* 单独设置等宽字体 */
 code,
 pre,
 kbd,
@@ -55,43 +49,46 @@ tt {
         monospace !important;
 }
 
+/* 2. 更新配色变量以匹配 Claude 主题 2.0 */
 :root {
-    --jl-primary: #be123c; /* Rose-700 */
+    --jl-primary: #be123c; /* Rose-700 保持原来的主色调作为点缀，或者可以使用 #7C1B13 */
     --jl-primary-dark: #9f1239; /* Rose-800 */
-    --jl-black-soft: #27272a;
-    --jl-white-soft: #f4f4f5;
+    --jl-black-soft: #2A2B2A; /* 深灰黑色 */
+    --jl-white-soft: #F8F7F2; /* 温暖的米色 */
 }
 
+/* 深色主题配置 */
 body[theme-mode="dark"] {
-    --jl-bg: #18181b; /* Zinc-950 */
-    --jl-surface: #27272a; /* Zinc-800 */
-    --jl-surface-soft: #3f3f46; /* Zinc-700 */
-    --jl-card: #27272a;
-    --jl-border: #3f3f46; /* Zinc-700 */
-    --jl-text: #e4e4e7; /* Zinc-200 */
-    --jl-muted: #a1a1aa; /* Zinc-400 */
-    --jl-input-bg: #27272a;
-    --jl-code-bg: #27272a;
-    --jl-code-text: #fb7185; /* Rose-400 */
-    --jl-pre-code-text: #d4d7dd;
-    --jl-chip-bg: #3f3f46;
-    --jl-chip-hover: #52525b;
+    --jl-bg: #2B2B2B; /* 深炭灰色 */
+    --jl-surface: #2D2E2D; /* 深橄榄灰色 */
+    --jl-surface-soft: #3D3D3A; /* 中灰色带微橄榄绿调 */
+    --jl-card: #2D2E2D;
+    --jl-border: rgba(94, 93, 89, 0.4); /* #5E5D5940 */
+    --jl-text: hsl(50, 14%, 91%); /* 暖色调浅米白色 */
+    --jl-muted: #ABB2BF; /* 浅钢蓝灰色，用于弱化文字 */
+    --jl-input-bg: #3D3D3A;
+    --jl-code-bg: rgba(229, 229, 226, 0.05); /* #E5E5E20D */
+    --jl-code-text: #EA928A; /* 淡珊瑚红色 */
+    --jl-pre-code-text: #ABB2BF;
+    --jl-chip-bg: #3D3D3A;
+    --jl-chip-hover: #4A4A47;
 }
 
+/* 浅色主题配置 */
 body[theme-mode="light"] {
-    --jl-bg: #fafafa; /* Zinc-50 */
-    --jl-surface: #ffffff;
-    --jl-surface-soft: #f4f4f5; /* Zinc-100 */
-    --jl-card: #ffffff;
-    --jl-border: #e4e4e7; /* Zinc-200 */
-    --jl-text: #27272a; /* Zinc-800 */
-    --jl-muted: #71717a; /* Zinc-500 */
-    --jl-input-bg: #ffffff;
-    --jl-code-bg: #f4f4f5;
-    --jl-code-text: #be123c; /* Rose-700 */
+    --jl-bg: hsl(55, 19%, 89%); /* 淡米黄灰色 */
+    --jl-surface: hsl(51, 24%, 95%); /* 温暖的米色/麦秆黄 */
+    --jl-surface-soft: hsl(40, 23%, 98%); /* 极浅米黄 */
+    --jl-card: #FFFFFF;
+    --jl-border: rgba(135, 134, 127, 0.4); /* #87867F40 */
+    --jl-text: hsl(49, 19.6%, 13.3%); /* 深色文字 */
+    --jl-muted: hsl(47, 15%, 45%); /* 深橄榄褐色减淡 */
+    --jl-input-bg: #FFFFFF;
+    --jl-code-bg: rgba(61, 57, 41, 0.05); /* #3D39290D */
+    --jl-code-text: #7C1B13; /* 砖红褐色 */
     --jl-pre-code-text: var(--jl-text);
-    --jl-chip-bg: #ffffff;
-    --jl-chip-hover: #f4f4f5;
+    --jl-chip-bg: #FFFFFF;
+    --jl-chip-hover: hsl(40, 23%, 98%);
 }
 
 body {

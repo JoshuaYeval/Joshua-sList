@@ -84,5 +84,17 @@ export const useQuiz = (wordList, speak, showQuizSetup) => {
             : 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300';
     });
 
-    return { quiz, quizInput, startQuiz, checkAnswer, nextQuestion, exitQuiz, inputStatusClass };
+    const getQuizHint = () => {
+        if (!quiz.currentWord.example || !quiz.currentWord.english) return '';
+        try {
+            // Escape special regex characters to prevent syntax errors in RegExp
+            const escaped = quiz.currentWord.english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const re = new RegExp(escaped, 'gi');
+            return quiz.currentWord.example.replace(re, '_____');
+        } catch (e) {
+            return quiz.currentWord.example;
+        }
+    };
+
+    return { quiz, quizInput, startQuiz, checkAnswer, nextQuestion, exitQuiz, inputStatusClass, getQuizHint };
 };

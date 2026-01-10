@@ -61,7 +61,15 @@ export const useWordbook = () => {
             try {
                 const response = await fetch(name, { cache: 'no-store' });
                 if (!response.ok) continue;
+
+                // Stop if response is HTML (Soft 404)
+                const cType = response.headers.get('content-type');
+                if (cType && cType.toLowerCase().includes('text/html')) continue;
+
                 const text = await response.text();
+                // Double check content
+                if (text.trim().startsWith('<')) continue;
+
                 const parsed = name.endsWith('.json') ? JSON.parse(text) : parseSimpleYaml(text);
                 if (parsed.baseUrl) config.baseUrl = parsed.baseUrl;
                 if (parsed.apiKey) config.apiKey = parsed.apiKey;

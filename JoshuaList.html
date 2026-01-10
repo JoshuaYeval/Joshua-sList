@@ -19,9 +19,15 @@
             }
         };
     </script>
+    <!-- 尝试使用官方 CDN，如果失败可能导致样式丢失 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- 优先使用国内 CDN 加速 Vue 加载 -->
+    <script src="https://cdn.staticfile.org/vue/3.3.4/vue.global.min.js"></script>
+    
+    <!-- Font Awesome 国内镜像 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css" />
+    
     <link rel="stylesheet" href="JoshuaList.css">
     <style>
         /* Sidebar Transition */
@@ -42,8 +48,8 @@
     </style>
 </head>
 
-<body class="transition-colors duration-300 overflow-hidden bg-white dark:bg-black">
-    <div id="app" class="h-screen flex flex-col transition-colors duration-300 bg-white dark:bg-black text-slate-900 dark:text-slate-100">
+<body class="transition-colors duration-300 overflow-hidden">
+    <div id="app" class="h-screen flex flex-col transition-colors duration-300">
 
         <!-- Header -->
         <header class="jl-surface shadow-sm z-30 border-b jl-border flex-shrink-0">
@@ -169,8 +175,8 @@
                 </aside>
             </transition>
 
-            <!-- Main Sc
-            <main class="flex-1 overflow-y-auto bg-slate-50">
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto">
                 <div class="max-w-full p-6 md:p-8 flex flex-col gap-6">
 
             <!-- Quiz Mode Overlay (Moved logic here or kept same) -->
@@ -210,7 +216,7 @@
                                         {{ quiz.mode === 'zh2en' ? quiz.currentWord.chinese : quiz.currentWord.english }}
                                     </h3>
                                     <p v-if="quiz.mode === 'zh2en' && quiz.currentWord.example" class="jl-muted italic text-sm">
-                                        Hint: "{{ quiz.currentWord.example.replace(new RegExp(quiz.currentWord.english, 'gi'), '_____') }}"
+                                        Hint: "{{ getQuizHint() }}"
                                     </p>
                                 </div>
 
@@ -325,7 +331,7 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <button @click="addWord" class="w-full h-full bg-primary hover:bg-primaryDark text-dark font-medium py-3 rounded-lg shadow-sm transition active:scale-95">
+                        <button @click="addWord" class="w-full h-full bg-primary hover:bg-primary text-primary font-medium py-3 rounded-lg shadow-sm transition active:scale-95">
                             添加
                         </button>
                     </div>
@@ -466,7 +472,6 @@
                                     :class="isDarkMode ? 'border-white/20' : 'border-black/10'">
                                     {{ item.example }}
                                 </div>
-                                </div>
 
                                 <div class="flex justify-between items-end mt-2 pt-2 border-t jl-border">
                                     <span v-if="config.display.date" class="text-xs jl-muted">{{ formatDate(item.timestamp) }}</span>
@@ -485,11 +490,12 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         </transition-group>
                     </div>
 
                     <!-- VIEW: TABLE -->
-                    <div v-else class="jl-surface rounded-xl shadow-sm border jl-border overflow-hidden">
+                    <div v-else class="overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm">
                                 <thead class="jl-surface-soft uppercase tracking-wider text-xs jl-muted border-b jl-border">
@@ -523,17 +529,17 @@
 
                                         <td v-if="config.display.date" class="px-6 py-3 jl-muted hidden lg:table-cell whitespace-nowrap">
                                             {{ formatDate(item.timestamp) }}
-                                        </td>openEditModal(item)" class="jl-muted hover:text-blue-500" title="编辑">
-                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                </button>
-                                                <button @click="
+                                        </td>
 
                                         <td class="px-6 py-3 text-right">
                                             <div class="flex justify-end gap-3">
-                                                <button @click="speak(item.english)" class="jl-muted hover:text-primary" title="朗读">
+                                                <button @click="openEditModal(item)" class="jl-muted hover:text-blue-500 transition" title="编辑">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </button>
+                                                <button @click="speak(item.english)" class="jl-muted hover:text-primary transition" title="朗读">
                                                     <i class="fa-solid fa-volume-high"></i>
                                                 </button>
-                                                <button @click="deleteWord(item.id)" class="jl-muted hover:text-red-500" title="删除">
+                                                <button @click="deleteWord(item.id)" class="jl-muted hover:text-red-500 transition" title="删除">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </div>
@@ -552,7 +558,6 @@
                     </div>
                 </div>
             </main>
-        </div>
 
         <!-- Setup Quiz Modal -->
         <div v-if="showQuizSetup" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
@@ -702,9 +707,10 @@
                             <div class="bg-primary h-2 rounded-full transition-all duration-300"
                                  :style="{ width: (importProgress.current / importProgress.total * 100) + '%' }"></div>
                         </div>
-              
-
-        <!-- Edit Modal -->
+                    </div>
+                </div>
+            </div>
+        </div>
         <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showEditModal = false">
             <div class="jl-surface w-full max-w-lg rounded-xl shadow-xl p-6 border jl-border">
                 <div class="flex justify-between items-center mb-6">
@@ -757,9 +763,6 @@
                             保存修改
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>      </div>
                 </div>
             </div>
         </div>
@@ -828,15 +831,17 @@
             el.src = src;
             el.async = true;
             el.onload = () => resolve(true);
-            el.onerror = () => reject(new Error('加载失败: ' + src));
+            el.onerror = () => reject(new Error('无法加载脚本: ' + src));
             document.head.appendChild(el);
         });
 
         const ensureVueReady = async () => {
             if (window.Vue) return;
+            // 备用 CDN 列表 (国内源优先)
             const cdnList = [
-                'https://unpkg.com/vue@3/dist/vue.global.prod.js',
-                'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js'
+                'https://lib.baomitu.com/vue/3.3.4/vue.global.min.js',
+                'https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js',
+                'https://unpkg.com/vue@3/dist/vue.global.js'
             ];
 
             for (const url of cdnList) {
@@ -847,24 +852,47 @@
                     console.warn(error.message);
                 }
             }
-
-            throw new Error('无法加载 Vue，请检查网络连接');
+            throw new Error('所有 Vue CDN 源均连接失败，请检查网络。');
         };
 
         (async () => {
             try {
+                // 1. 检查协议，提示用户使用服务器运行
+                if (window.location.protocol === 'file:') {
+                    console.warn('正在使用 file:// 协议运行，可能会导致模块加载失败。建议使用 VS Code Live Server 插件运行。');
+                }
+
                 await ensureVueReady();
+                
+                // 2. 加载主程序
                 await import('./src/main.js');
             } catch (error) {
-                console.error(error);
+                console.error('详细错误堆栈:', error);
+                
+                let msg = error.message || String(error);
+                let detail = '';
+
+                // 尝试解析常见的 cryptic errors
+                if (msg === '17') {
+                    msg = '代码 17 (通常是 EEXIST 或权限错误)';
+                    detail = '可能是文件系统操作冲突或浏览器安全策略限制。';
+                } else if (msg.includes("Unexpected token '<'")) {
+                    msg += ' (JS文件加载失败，服务器返回了HTML)';
+                } else if (msg.includes("Failed to fetch dynamically imported module")) {
+                    detail = '无法加载 ./src/main.js。请确文件路径正确，并不支持通过 file:// 协议直接打开，请使用 "Live Server" 运行。';
+                }
+
                 const toast = document.createElement('div');
-                toast.textContent = '页面初始化失败：' + error.message;
-                toast.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:10px 16px;border-radius:10px;background:#991b1b;color:#fff;font-size:14px;box-shadow:0 8px 20px rgba(0,0,0,0.2);z-index:9999;';
+                toast.innerHTML = `
+                    <div style="font-weight:bold; margin-bottom:4px;">⚠️ 页面初始化失败</div>
+                    <div style="font-size:12px; margin-bottom:4px;">${msg}</div>
+                    ${detail ? `<div style="font-size:11px; opacity:0.9;">${detail}</div>` : ''}
+                    <div style="font-size:10px; opacity:0.8; margin-top:6px;">按 F12 打开控制台查看详情</div>
+                `;
+                toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:16px 24px;border-radius:12px;background:#be123c;color:#fff;font-family:sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.3);z-index:9999;max-width:90%;text-align:center;';
                 document.body.appendChild(toast);
             }
         })();
     </script>
-
 </body>
 </html>
-
