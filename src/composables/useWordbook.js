@@ -6,7 +6,7 @@ const { ref, reactive, computed, watch, onMounted, onBeforeUnmount } = Vue;
 
 export const useWordbook = () => {
     const wordList = ref([]);
-    const newWord = reactive({ english: '', pos: '', chinese: '', example: '' });
+    const newWord = reactive({ german: '', pos: '', chinese: '', example: '' });
     const searchQuery = ref('');
     const viewMode = ref('card');
     const showSettings = ref(false);
@@ -18,7 +18,7 @@ export const useWordbook = () => {
     const isMasked = ref(false);
     const isTranslating = ref(false);
 
-    const editingWord = reactive({ id: '', english: '', pos: '', chinese: '', example: '' });
+    const editingWord = reactive({ id: '', german: '', pos: '', chinese: '', example: '' });
 
     const importMode = ref('merge');
     const importFileInput = ref(null);
@@ -84,11 +84,11 @@ export const useWordbook = () => {
         return false;
     };
 
-    const isNewWordPhrase = computed(() => isPhrase(newWord.english));
+    const isNewWordPhrase = computed(() => isPhrase(newWord.german));
 
     const incompleteWords = computed(() => wordList.value.filter((word) => {
         const needsChinese = !word.chinese || !word.chinese.trim();
-        const needsPos = !isPhrase(word.english) && (!word.pos || !word.pos.trim());
+        const needsPos = !isPhrase(word.german) && (!word.pos || !word.pos.trim());
         const needsExample = !word.example || !word.example.trim();
         return needsChinese || needsPos || needsExample;
     }));
@@ -99,11 +99,11 @@ export const useWordbook = () => {
         if (searchQuery.value) {
             const q = searchQuery.value.toLowerCase();
             list = list.filter((word) => {
-                const en = (word.english || '').toLowerCase();
+                const de = (word.german || '').toLowerCase();
                 const zh = word.chinese || '';
                 const ex = (word.example || '').toLowerCase();
                 const pos = (word.pos || '').toLowerCase();
-                return en.includes(q) || zh.includes(searchQuery.value) || ex.includes(q) || pos.includes(q);
+                return de.includes(q) || zh.includes(searchQuery.value) || ex.includes(q) || pos.includes(q);
             });
         }
 
@@ -112,9 +112,9 @@ export const useWordbook = () => {
             let bVal;
 
             switch (sortBy.value) {
-                case 'english':
-                    aVal = (a.english || '').toLowerCase();
-                    bVal = (b.english || '').toLowerCase();
+                case 'german':
+                    aVal = (a.german || '').toLowerCase();
+                    bVal = (b.german || '').toLowerCase();
                     break;
                 case 'pos':
                     aVal = (a.pos || '').toLowerCase();
@@ -146,26 +146,26 @@ export const useWordbook = () => {
 
     const speak = (text) => {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = /[\u4e00-\u9fff]/.test(text) ? 'zh-CN' : 'en-US';
+        utterance.lang = /[\u4e00-\u9fff]/.test(text) ? 'zh-CN' : 'de-DE';
         window.speechSynthesis.speak(utterance);
     };
 
     const addWord = () => {
-        const english = newWord.english.trim();
-        if (!english) return;
+        const german = newWord.german.trim();
+        if (!german) return;
 
-        const pos = isPhrase(english) ? '' : normalizePos(newWord.pos);
+        const pos = isPhrase(german) ? '' : normalizePos(newWord.pos);
 
         wordList.value.unshift({
             id: crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
-            english,
+            german,
             pos,
             chinese: newWord.chinese.trim(),
             example: newWord.example.trim(),
             timestamp: Date.now()
         });
 
-        newWord.english = '';
+        newWord.german = '';
         newWord.pos = '';
         newWord.chinese = '';
         newWord.example = '';
@@ -187,8 +187,8 @@ export const useWordbook = () => {
         if (index !== -1) {
             wordList.value[index] = {
                 ...wordList.value[index],
-                english: editingWord.english.trim(),
-                pos: isPhrase(editingWord.english) ? '' : normalizePos(editingWord.pos),
+                german: editingWord.german.trim(),
+                pos: isPhrase(editingWord.german) ? '' : normalizePos(editingWord.pos),
                 chinese: editingWord.chinese.trim(),
                 example: editingWord.example.trim()
             };
@@ -197,14 +197,14 @@ export const useWordbook = () => {
     };
 
     const translate = async () => {
-        if (!newWord.english) return;
+        if (!newWord.german) return;
         isTranslating.value = true;
 
         try {
             if (config.engine === 'ai' && config.apiKey) {
                 await aiTranslate();
             } else {
-                const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(newWord.english)}&langpair=en|zh-CN`);
+                const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(newWord.german)}&langpair=de|zh-CN`);
                 const data = await res.json();
                 newWord.chinese = data.responseData?.translatedText || '';
             }
@@ -216,15 +216,15 @@ export const useWordbook = () => {
     };
 
     const aiTranslate = async () => {
-        const english = newWord.english.trim();
+        const german = newWord.german.trim();
         const prompt = [
-            'For the English input, output ONLY valid JSON (no markdown).',
+            'For the German input, output ONLY valid JSON (no markdown).',
             'Rules:',
-            '- "pos" must be one of ["n.","v.","adj.","adv.","pron.","prep.","conj"] or "" when the input is a phrase.',
+            '- "pos" must be one of ["n.","v.","adj.","adv.","pron.","prep.","konj."] or "" when the input is a phrase.',
             '- "meaning" must be a concise Simplified Chinese meaning.',
-            '- "example" must be a short English sentence using the input.',
+            '- "example" must be a short German sentence using the input.',
             'Return format: {"pos":"","meaning":"","example":""}',
-            `Input: "${english}"`
+            `Input: "${german}"`
         ].join('\n');
 
         const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/chat/completions';
@@ -249,14 +249,14 @@ export const useWordbook = () => {
 
             newWord.chinese = json.meaning || '';
             newWord.example = json.example || '';
-            newWord.pos = isPhrase(english) ? '' : normalizePos(json.pos);
+            newWord.pos = isPhrase(german) ? '' : normalizePos(json.pos);
         } catch (error) {
             newWord.chinese = data?.choices?.[0]?.message?.content || '';
         }
     };
 
     const handleEnter = () => {
-        if (newWord.english && !newWord.chinese) {
+        if (newWord.german && !newWord.chinese) {
             translate();
         } else {
             addWord();
@@ -288,10 +288,10 @@ export const useWordbook = () => {
             return -1;
         };
 
-        const idxEnglish = findIdx(['english', 'en', 'word', '单词']);
+        const idxGerman = findIdx(['german', 'deutsch', 'de', 'word', '单词']);
         const idxPos = findIdx(['partofspeech', 'pos', '词性']);
         const idxMeaning = findIdx(['meaning', 'chinese', '释义']);
-        const idxExample = findIdx(['example', '例句']);
+        const idxExample = findIdx(['example', 'beispiel', '例句']);
         const idxDate = findIdx(['date', 'timestamp', '时间']);
 
         if (!silent) {
@@ -311,18 +311,18 @@ export const useWordbook = () => {
         for (let i = 1; i < lines.length; i++) {
             if (!silent) importProgress.current = i;
             const cols = parseCsvLine(lines[i]);
-            const english = (cols[idxEnglish >= 0 ? idxEnglish : 0] || '').trim();
-            if (!english) {
+            const german = (cols[idxGerman >= 0 ? idxGerman : 0] || '').trim();
+            if (!german) {
                 skipped++;
                 continue;
             }
 
-            if (mode === 'merge' && wordList.value.some((word) => word.english?.toLowerCase() === english.toLowerCase())) {
+            if (mode === 'merge' && wordList.value.some((word) => word.german?.toLowerCase() === german.toLowerCase())) {
                 skipped++;
                 continue;
             }
 
-            const pos = isPhrase(english) ? '' : normalizePos(cols[idxPos] || '');
+            const pos = isPhrase(german) ? '' : normalizePos(cols[idxPos] || '');
             const chinese = (cols[idxMeaning >= 0 ? idxMeaning : 1] || '').trim();
             const example = (cols[idxExample >= 0 ? idxExample : 2] || '').trim();
 
@@ -335,7 +335,7 @@ export const useWordbook = () => {
 
             wordList.value.push({
                 id: crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
-                english,
+                german,
                 pos,
                 chinese,
                 example,
@@ -388,7 +388,7 @@ export const useWordbook = () => {
         for (let i = 0; i < targets.length; i++) {
             const word = targets[i];
             aiFillProgress.current = i + 1;
-            aiFillProgress.message = `正在处理: ${word.english}`;
+            aiFillProgress.message = `正在处理: ${word.german}`;
             try {
                 await fillWordWithAI(word);
                 await sleep(200);
@@ -405,22 +405,22 @@ export const useWordbook = () => {
     };
 
     const fillWordWithAI = async (word) => {
-        const english = word.english.trim();
+        const german = word.german.trim();
         const needsChinese = !word.chinese || !word.chinese.trim();
-        const needsPos = !isPhrase(english) && (!word.pos || !word.pos.trim());
+        const needsPos = !isPhrase(german) && (!word.pos || !word.pos.trim());
         const needsExample = !word.example || !word.example.trim();
         if (!needsChinese && !needsPos && !needsExample) return;
 
         const prompt = [
-            'For the English input, output ONLY valid JSON (no markdown).',
+            'For the German input, output ONLY valid JSON (no markdown).',
             'Rules:',
-            '- "pos" must be one of ["n.","v.","adj.","adv.","pron.","prep.","conj"] or "" when it is a phrase.',
+            '- "pos" must be one of ["n.","v.","adj.","adv.","pron.","prep.","konj."] or "" when it is a phrase.',
             '- "meaning" must be a concise Simplified Chinese meaning.',
-            '- "example" must be a short English sentence using the input.',
+            '- "example" must be a short German sentence using the input.',
             '- Only fill missing fields, keep existing values.',
             `Current data: {"pos":"${word.pos || ''}","meaning":"${word.chinese || ''}","example":"${word.example || ''}"}`,
             'Return format: {"pos":"","meaning":"","example":""}',
-            `Input: "${english}"`
+            `Input: "${german}"`
         ].join('\n');
 
         const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/chat/completions';
@@ -475,8 +475,8 @@ export const useWordbook = () => {
 
     watch(wordList, (value) => localStorage.setItem('jl_data', JSON.stringify(value)), { deep: true });
 
-    watch(() => newWord.english, (english) => {
-        if (isPhrase(english)) newWord.pos = '';
+    watch(() => newWord.german, (german) => {
+        if (isPhrase(german)) newWord.pos = '';
     });
 
     watch(isMasked, (value) => localStorage.setItem('jl_masked', value ? '1' : '0'));

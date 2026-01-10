@@ -3,7 +3,7 @@ const { reactive, ref, computed, nextTick } = Vue;
 export const useQuiz = (wordList, speak, showQuizSetup) => {
     const quiz = reactive({
         active: false,
-        mode: 'zh2en',
+        mode: 'zh2de',
         list: [],
         currentIdx: 0,
         currentWord: {},
@@ -46,11 +46,11 @@ export const useQuiz = (wordList, speak, showQuizSetup) => {
         quiz.answered = true;
 
         const input = quiz.userInput.trim().toLowerCase();
-        const target = quiz.mode === 'zh2en'
-            ? String(quiz.currentWord.english || '').toLowerCase()
+        const target = quiz.mode === 'zh2de'
+            ? String(quiz.currentWord.german || '').toLowerCase()
             : String(quiz.currentWord.chinese || '').toLowerCase();
 
-        if (quiz.mode === 'zh2en') {
+        if (quiz.mode === 'zh2de') {
             quiz.isCorrect = input === target;
         } else {
             quiz.isCorrect = target.includes(input) || input.includes(target);
@@ -58,9 +58,9 @@ export const useQuiz = (wordList, speak, showQuizSetup) => {
 
         if (quiz.isCorrect) {
             quiz.score++;
-            speak(quiz.mode === 'zh2en' ? 'Correct' : '正确');
+            speak(quiz.mode === 'zh2de' ? 'Richtig' : '正确');
         } else {
-            speak('Wrong');
+            speak('Falsch');
         }
     };
 
@@ -85,10 +85,10 @@ export const useQuiz = (wordList, speak, showQuizSetup) => {
     });
 
     const getQuizHint = () => {
-        if (!quiz.currentWord.example || !quiz.currentWord.english) return '';
+        if (!quiz.currentWord.example || !quiz.currentWord.german) return '';
         try {
             // Escape special regex characters to prevent syntax errors in RegExp
-            const escaped = quiz.currentWord.english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const escaped = quiz.currentWord.german.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const re = new RegExp(escaped, 'gi');
             return quiz.currentWord.example.replace(re, '_____');
         } catch (e) {

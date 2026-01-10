@@ -34,12 +34,12 @@ export const parseCsvLine = (line) => {
 };
 
 export const buildCsv = (words) => {
-    const header = ['English', 'PartOfSpeech', 'Meaning', 'Example', 'Date'];
+    const header = ['German', 'PartOfSpeech', 'Meaning', 'Example', 'Date'];
     const lines = [header.join(',')];
 
     words.forEach((word) => {
         lines.push(
-            `"${escapeCsv(word.english)}","${escapeCsv(word.pos || '')}","${escapeCsv(word.chinese || '')}",` +
+            `"${escapeCsv(word.german)}","${escapeCsv(word.pos || '')}","${escapeCsv(word.chinese || '')}",` +
             `"${escapeCsv(word.example || '')}","${new Date(word.timestamp).toISOString()}"`
         );
     });

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joshua's List - 智能单词本</title>
+    <title>Joshua's German List - 德语单词本</title>
     <script>
         window.tailwind = window.tailwind || {};
         tailwind.config = {
@@ -61,8 +61,8 @@
                         <i class="fa-solid fa-bars"></i>
                     </button>
                     <div>
-                        <h1 class="text-xl font-bold tracking-tight leading-tight">Joshua’s List</h1>
-                        <p class="text-xs jl-muted">Personal Vocabulary Builder</p>
+                        <h1 class="text-xl font-bold tracking-tight leading-tight">Joshua’s German List</h1>
+                        <p class="text-xs jl-muted">Personal German Vocabulary Builder</p>
                     </div>
                 </div>
                 <div class="flex gap-2 items-center">
@@ -188,7 +188,7 @@
                         <h2 class="text-xl font-bold flex items-center gap-2">
                             <span class="text-primary">测试模式</span>
                             <span class="text-sm px-2 py-0.5 rounded font-normal jl-chip border jl-border">
-                                {{ quiz.mode === 'zh2en' ? '看中写英' : '看英写中' }}
+                                {{ quiz.mode === 'zh2de' ? '看中写德' : '看德写中' }}
                             </span>
                         </h2>
                         <button @click="exitQuiz" class="jl-muted hover:text-red-500 transition flex items-center gap-1 text-sm font-medium">
@@ -213,9 +213,9 @@
                                 <!-- Question -->
                                 <div class="mb-8">
                                     <h3 class="text-3xl md:text-4xl font-bold mb-2">
-                                        {{ quiz.mode === 'zh2en' ? quiz.currentWord.chinese : quiz.currentWord.english }}
+                                        {{ quiz.mode === 'zh2de' ? quiz.currentWord.chinese : quiz.currentWord.german }}
                                     </h3>
-                                    <p v-if="quiz.mode === 'zh2en' && quiz.currentWord.example" class="jl-muted italic text-sm">
+                                    <p v-if="quiz.mode === 'zh2de' && quiz.currentWord.example" class="jl-muted italic text-sm">
                                         Hint: "{{ getQuizHint() }}"
                                     </p>
                                 </div>
@@ -227,7 +227,7 @@
                                         @keyup.enter="checkAnswer"
                                         :disabled="quiz.answered"
                                         type="text"
-                                        :placeholder="quiz.mode === 'zh2en' ? 'Type English word...' : '输入中文释义...'"
+                                        :placeholder="quiz.mode === 'zh2de' ? 'Type German word...' : '输入中文释义...'"
                                         class="w-full px-5 py-4 text-center text-xl rounded-xl border-2 transition outline-none jl-input"
                                         :class="inputStatusClass"
                                         autofocus
@@ -244,7 +244,7 @@
                                             <div class="jl-muted text-sm font-normal">
                                                 答案
                                                 <span class="font-bold">
-                                                    {{ quiz.mode === 'zh2en' ? quiz.currentWord.english : quiz.currentWord.chinese }}
+                                                    {{ quiz.mode === 'zh2de' ? quiz.currentWord.german : quiz.currentWord.chinese }}
                                                 </span>
                                             </div>
                                         </div>
@@ -298,7 +298,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
                     <div class="md:col-span-4 relative group">
-                        <input v-model="newWord.english" @keyup.enter="handleEnter" type="text" placeholder="输入英文单词或词组..."
+                        <input v-model="newWord.german" @keyup.enter="handleEnter" type="text" placeholder="输入德语单词或词组..."
                             class="w-full pl-4 pr-10 py-3 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary focus:border-transparent jl-input">
                         <button @click="translate" :disabled="isTranslating"
                             class="absolute right-3 top-1/2 transform -translate-y-1/2 jl-muted hover:text-primary p-1 transition"
@@ -320,7 +320,7 @@
                             <option value="adv.">adv.</option>
                             <option value="pron.">pron.</option>
                             <option value="prep.">prep.</option>
-                            <option value="conj.">conj.</option>
+                            <option value="konj.">konj.</option>
                             <option value="">其他</option>
                         </select>
                     </div>
@@ -381,13 +381,13 @@
                                             class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
                                         <i class="fa-solid fa-clock-rotate-left"></i> 最旧优先
                                     </button>
-                                    <button @click="setSortBy('english', 'asc')"
-                                            :class="sortBy === 'english' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                    <button @click="setSortBy('german', 'asc')"
+                                            :class="sortBy === 'german' && sortOrder === 'asc' ? 'text-primary bg-primary/10' : 'jl-muted'"
                                             class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
                                         <i class="fa-solid fa-sort-alpha-down"></i> A-Z
                                     </button>
-                                    <button @click="setSortBy('english', 'desc')"
-                                            :class="sortBy === 'english' && sortOrder === 'desc' ? 'text-primary bg-primary/10' : 'jl-muted'"
+                                    <button @click="setSortBy('german', 'desc')"
+                                            :class="sortBy === 'german' && sortOrder === 'desc' ? 'text-primary bg-primary/10' : 'jl-muted'"
                                             class="w-full px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-2">
                                         <i class="fa-solid fa-sort-alpha-up"></i> Z-A
                                     </button>
@@ -423,7 +423,7 @@
                         <div class="flex gap-3 w-full md:w-auto">
                             <div class="relative flex-1 md:w-64">
                                 <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 jl-muted"></i>
-                                <input v-model="searchQuery" type="text" placeholder="搜索(英文/中文/例句/词性...)"
+                                <input v-model="searchQuery" type="text" placeholder="搜索(德语/中文/例句/词性...)"
                                     class="w-full pl-9 pr-4 py-2 rounded-lg border-transparent outline-none text-sm transition jl-input focus:ring-2 focus:ring-primary">
                             </div>
                         </div>
@@ -437,14 +437,14 @@
 
                                 <div class="flex justify-between items-start mb-2 gap-2">
                                     <div class="flex items-center gap-2 min-w-0">
-                                        <h3 class="text-xl font-bold truncate">{{ item.english }}</h3>
+                                        <h3 class="text-xl font-bold truncate">{{ item.german }}</h3>
                                         <span v-if="config.display.pos && item.pos"
                                             class="text-xs px-2 py-0.5 rounded-md jl-chip border jl-border shrink-0">
                                             {{ item.pos }}
                                         </span>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <button @click="speak(item.english)" class="jl-muted hover:text-primary transition p-1" title="朗读英文">
+                                        <button @click="speak(item.german)" class="jl-muted hover:text-primary transition p-1" title="朗读德语">
                                             <i class="fa-solid fa-volume-high"></i>
                                         </button>
                                         <button v-if="config.display.example && item.example" @click="speak(item.example)" class="jl-muted hover:text-primary transition p-1" title="朗读例句">
@@ -462,7 +462,7 @@
                                         @click="isMasked && (isMasked = false)">
                                         {{ item.chinese }}
                                     </div>
-                                    <button @click="speak(item.chinese || item.english)" class="jl-muted hover:text-primary transition p-1 shrink-0" title="朗读释义">
+                                    <button @click="speak(item.chinese || item.german)" class="jl-muted hover:text-primary transition p-1 shrink-0" title="朗读释义">
                                         <i class="fa-solid fa-volume-low"></i>
                                     </button>
                                 </div>
@@ -500,7 +500,7 @@
                             <table class="w-full text-left text-sm">
                                 <thead class="jl-surface-soft uppercase tracking-wider text-xs jl-muted border-b jl-border">
                                     <tr>
-                                        <th class="px-6 py-3 font-semibold">单词(English)</th>
+                                        <th class="px-6 py-3 font-semibold">单词(German)</th>
                                         <th v-if="config.display.pos" class="px-6 py-3 font-semibold whitespace-nowrap">词性</th>
                                         <th v-if="config.display.meaning" class="px-6 py-3 font-semibold">释义(Meaning)</th>
                                         <th v-if="config.display.example" class="px-6 py-3 font-semibold hidden md:table-cell">例句(Example)</th>
@@ -510,7 +510,7 @@
                                 </thead>
                                 <tbody class="divide-y jl-border">
                                     <tr v-for="item in filteredList" :key="item.id" class="hover:bg-black/5 dark:hover:bg-white/5 transition group">
-                                        <td class="px-6 py-3 font-bold">{{ item.english }}</td>
+                                        <td class="px-6 py-3 font-bold">{{ item.german }}</td>
 
                                         <td v-if="config.display.pos" class="px-6 py-3">
                                             <span v-if="item.pos" class="text-xs px-2 py-0.5 rounded-md jl-chip border jl-border">{{ item.pos }}</span>
@@ -536,7 +536,7 @@
                                                 <button @click="openEditModal(item)" class="jl-muted hover:text-blue-500 transition" title="编辑">
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 </button>
-                                                <button @click="speak(item.english)" class="jl-muted hover:text-primary transition" title="朗读">
+                                                <button @click="speak(item.german)" class="jl-muted hover:text-primary transition" title="朗读">
                                                     <i class="fa-solid fa-volume-high"></i>
                                                 </button>
                                                 <button @click="deleteWord(item.id)" class="jl-muted hover:text-red-500 transition" title="删除">
@@ -570,20 +570,20 @@
                 <p class="jl-muted text-sm mb-6">本次测试将包含 {{ Math.min(20, filteredList.length) }} 个随机单词</p>
 
                 <div class="space-y-3">
-                    <button @click="startQuiz('zh2en')"
+                    <button @click="startQuiz('zh2de')"
                         class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
                         <div class="text-left">
                             <div class="font-bold group-hover:text-primary">默写测试</div>
-                            <div class="text-xs jl-muted">看中文，写英文</div>
+                            <div class="text-xs jl-muted">看中文，写德语</div>
                         </div>
                         <i class="fa-solid fa-pen text-black/20 dark:text-white/30 group-hover:text-primary"></i>
                     </button>
 
-                    <button @click="startQuiz('en2zh')"
+                    <button @click="startQuiz('de2zh')"
                         class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
                         <div class="text-left">
                             <div class="font-bold group-hover:text-primary">翻译测试</div>
-                            <div class="text-xs jl-muted">看英文，写中文</div>
+                            <div class="text-xs jl-muted">看德语，写中文</div>
                         </div>
                         <i class="fa-solid fa-language text-black/20 dark:text-white/30 group-hover:text-primary"></i>
                     </button>
@@ -723,7 +723,7 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium mb-1">单词 / 词组</label>
-                        <input v-model="editingWord.english" type="text"
+                        <input v-model="editingWord.german" type="text"
                             class="w-full px-4 py-2 rounded-lg border outline-none transition focus:ring-2 focus:ring-primary jl-input">
                     </div>
 
@@ -738,7 +738,7 @@
                                 <option value="adv.">adv.</option>
                                 <option value="pron.">pron.</option>
                                 <option value="prep.">prep.</option>
-                                <option value="conj.">conj.</option>
+                                <option value="konj.">konj.</option>
                                 <option value="">其他</option>
                             </select>
                         </div>
