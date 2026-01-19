@@ -211,48 +211,79 @@
                                 </div>
 
                                 <!-- Question -->
-                                <div class="mb-8">
-                                    <h3 class="text-3xl md:text-4xl font-bold mb-2">
-                                        {{ quiz.mode === 'zh2en' ? quiz.currentWord.chinese : quiz.currentWord.english }}
-                                    </h3>
-                                    <p v-if="quiz.mode === 'zh2en' && quiz.currentWord.example" class="jl-muted italic text-sm">
-                                        Hint: "{{ getQuizHint() }}"
-                                    </p>
+                                <div class="mb-8 min-h-[160px] flex flex-col justify-center">
+                                    <template v-if="quiz.mode === 'flashcard'">
+                                        <div @click="!quiz.isFlipped && flipCard()" class="cursor-pointer">
+                                            <h3 class="text-3xl md:text-5xl font-bold mb-4 transition-all duration-300" :class="quiz.isFlipped ? 'text-primary' : ''">
+                                                {{ quiz.currentWord.english }}
+                                            </h3>
+                                            <div v-if="quiz.isFlipped" class="animate-fade-in space-y-2">
+                                                <div class="text-xl font-medium">{{ quiz.currentWord.pos }} {{ quiz.currentWord.chinese }}</div>
+                                                <div class="italic text-sm jl-muted px-4">{{ quiz.currentWord.example }}</div>
+                                            </div>
+                                            <div v-else class="text-sm jl-muted mt-8 opacity-50">
+                                                <i class="fa-solid fa-hand-pointer animate-bounce"></i> 点击查看背面
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <h3 class="text-3xl md:text-4xl font-bold mb-2">
+                                            {{ quiz.mode === 'zh2en' ? quiz.currentWord.chinese : quiz.currentWord.english }}
+                                        </h3>
+                                        <p v-if="quiz.mode === 'zh2en' && quiz.currentWord.example" class="jl-muted italic text-sm">
+                                            Hint: "{{ getQuizHint() }}"
+                                        </p>
+                                    </template>
                                 </div>
 
                                 <!-- Input Area -->
                                 <div class="relative max-w-md mx-auto">
-                                    <input
-                                        v-model="quiz.userInput"
-                                        @keyup.enter="checkAnswer"
-                                        :disabled="quiz.answered"
-                                        type="text"
-                                        :placeholder="quiz.mode === 'zh2en' ? 'Type English word...' : '输入中文释义...'"
-                                        class="w-full px-5 py-4 text-center text-xl rounded-xl border-2 transition outline-none jl-input"
-                                        :class="inputStatusClass"
-                                        autofocus
-                                        ref="quizInput"
-                                    >
-                                    <div v-if="quiz.answered" class="mt-4 animate-fade-in">
-                                        <div v-if="quiz.isCorrect" class="text-green-500 font-bold text-lg flex items-center justify-center gap-2">
-                                            <i class="fa-solid fa-check-circle"></i> 正确 (Correct)
+                                    <template v-if="quiz.mode === 'flashcard'">
+                                        <div v-if="quiz.isFlipped" class="grid grid-cols-2 gap-4 mt-8 animate-fade-in-up">
+                                            <button @click="markFlashcard(false)" class="py-4 rounded-xl bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 hover:brightness-95 transition font-bold shadow-sm">
+                                                <i class="fa-solid fa-xmark"></i> 忘记了
+                                            </button>
+                                            <button @click="markFlashcard(true)" class="py-4 rounded-xl bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 hover:brightness-95 transition font-bold shadow-sm">
+                                                <i class="fa-solid fa-check"></i> 记得
+                                            </button>
                                         </div>
-                                        <div v-else class="text-red-500 font-bold text-lg">
-                                            <div class="flex items-center justify-center gap-2 mb-1">
-                                                <i class="fa-solid fa-circle-xmark"></i> 错误 (Wrong)
+                                        <div v-else class="h-20"></div> <!-- Placeholder -->
+                                    </template>
+                                    
+                                    <template v-else>
+                                        <input
+                                            v-model="quiz.userInput"
+                                            @keyup.enter="checkAnswer"
+                                            :disabled="quiz.answered"
+                                            type="text"
+                                            :placeholder="quiz.mode === 'zh2en' ? 'Type English word...' : '输入中文释义...'"
+                                            class="w-full px-5 py-4 text-center text-xl rounded-xl border-2 transition outline-none jl-input"
+                                            :class="inputStatusClass"
+                                            autofocus
+                                            ref="quizInput"
+                                        >
+                                        <div v-if="quiz.answered" class="mt-4 animate-fade-in">
+                                            <div v-if="quiz.isCorrect" class="text-green-500 font-bold text-lg flex items-center justify-center gap-2">
+                                                <i class="fa-solid fa-check-circle"></i> 正确 (Correct)
                                             </div>
-                                            <div class="jl-muted text-sm font-normal">
-                                                答案
-                                                <span class="font-bold">
-                                                    {{ quiz.mode === 'zh2en' ? quiz.currentWord.english : quiz.currentWord.chinese }}
-                                                </span>
+                                            <div v-else class="text-red-500 font-bold text-lg">
+                                                <div class="flex items-center justify-center gap-2 mb-1">
+                                                    <i class="fa-solid fa-circle-xmark"></i> 错误 (Wrong)
+                                                </div>
+                                                <div class="jl-muted text-sm font-normal">
+                                                    答案
+                                                    <span class="font-bold">
+                                                        {{ quiz.mode === 'zh2en' ? quiz.currentWord.english : quiz.currentWord.chinese }}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </template>
                                 </div>
 
                                 <!-- Action Button -->
-                                <button @click="quiz.answered ? nextQuestion() : checkAnswer()"
+                                <button v-if="quiz.mode !== 'flashcard'" 
+                                    @click="quiz.answered ? nextQuestion() : checkAnswer()"
                                     class="mt-8 px-8 py-3 bg-primary hover:bg-primaryDark text-white rounded-lg font-semibold shadow-lg shadow-indigo-500/30 transition w-full md:w-auto min-w-[150px]">
                                     {{ quiz.answered ? (quiz.currentIdx === quiz.list.length - 1 ? '查看结果' : '下一题') : '提交答案' }}
                                 </button>
@@ -405,6 +436,10 @@
                                 :disabled="!config.display.meaning"
                                 :title="config.display.meaning ? (isMasked ? '取消模糊中文' : '模糊中文') : '已关闭释义显示'">
                                 <i class="fa-solid" :class="isMasked ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+
+                            <button @click="exportToPrint" class="jl-muted hover:text-indigo-600 px-2 py-1 transition" title="导出打印/PDF">
+                                <i class="fa-solid fa-print"></i>
                             </button>
 
                             <button @click="exportCSV" class="jl-muted hover:text-green-600 px-2 py-1 transition" title="导出CSV">
@@ -567,9 +602,31 @@
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
                 <h3 class="text-xl font-bold mb-2">选择测试模式</h3>
-                <p class="jl-muted text-sm mb-6">本次测试将包含 {{ Math.min(20, filteredList.length) }} 个随机单词</p>
+                <p class="jl-muted text-sm mb-6">本次测试将包含 {{ config.useAllLists ? '所有列表中的单词' : (Math.min(20, filteredList.length) + ' 个随机单词') }}</p>
 
-                <div class="space-y-3">
+                <div class="mb-4 text-left p-3 rounded-lg border jl-border bg-black/5 dark:bg-white/5">
+                    <label class="flex items-center cursor-pointer gap-2 select-none">
+                        <input type="checkbox" v-model="quizConfig.useAllLists" class="w-4 h-4 accent-primary">
+                        <span class="text-sm font-medium">包含所有文件夹中的单词</span>
+                    </label>
+                    <p class="text-xs jl-muted mt-1 ml-6">勾选后将扫描当前所有 CSV 文件进行测试。</p>
+                </div>
+
+                <div v-if="quizConfig.loading" class="py-4 text-center text-primary">
+                    <div class="loader mx-auto mb-2"></div>
+                    <div class="text-sm">{{ quizConfig.progress }}</div>
+                </div>
+
+                <div v-else class="space-y-3">
+                    <button @click="startQuiz('flashcard')"
+                        class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
+                        <div class="text-left">
+                            <div class="font-bold group-hover:text-primary">闪卡模式 (Flashcard)</div>
+                            <div class="text-xs jl-muted">正反面记忆，快速过词</div>
+                        </div>
+                        <i class="fa-solid fa-clone text-black/20 dark:text-white/30 group-hover:text-primary"></i>
+                    </button>
+
                     <button @click="startQuiz('zh2en')"
                         class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
                         <div class="text-left">

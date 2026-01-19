@@ -221,6 +221,30 @@ export const useFileManager = (wordList, importFromText, buildCsvPayload) => {
         return segments.join(' · ');
     };
 
+    const readAllFiles = async (progressCallback) => {
+        if (!directoryState.handle) throw new Error('No directory selected');
+        const results = [];
+        const files = localFiles.value;
+        let processed = 0;
+
+        for (const entry of files) {
+            try {
+                const file = await entry.handle.getFile();
+                const text = await file.text();
+                results.push({ name: entry.name, content: text });
+            } catch (e) {
+                console.error('Failed to read file:', entry.name, e);
+            }
+            processed++;
+            if (progressCallback) progressCallback(processed, files.length);
+
+            if (processed % 5 === 0) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+        }
+        return results;
+    };
+
     return {
         activeList,
         localFiles,
@@ -237,6 +261,7 @@ export const useFileManager = (wordList, importFromText, buildCsvPayload) => {
         refreshLocalFiles,
         loadMoreFiles,
         handleFileScroll,
-        formatFileMeta
+        formatFileMeta,
+        readAllFiles
     };
 };

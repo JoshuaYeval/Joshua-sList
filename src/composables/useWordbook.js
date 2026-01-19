@@ -33,6 +33,7 @@ export const useWordbook = () => {
         apiKey: '',
         baseUrl: '',
         model: 'gpt-3.5-turbo',
+        defaultDir: '',
         display: {
             pos: true,
             meaning: true,
@@ -56,7 +57,7 @@ export const useWordbook = () => {
     };
 
     const loadApiConfigFile = async () => {
-        const candidates = ['api.json', 'api.yaml', 'api.yml'];
+        const candidates = ['setting.yaml', 'api.json', 'api.yaml', 'api.yml'];
         for (const name of candidates) {
             try {
                 const response = await fetch(name, { cache: 'no-store' });
@@ -75,6 +76,7 @@ export const useWordbook = () => {
                 if (parsed.apiKey) config.apiKey = parsed.apiKey;
                 if (parsed.model) config.model = parsed.model;
                 if (parsed.engine) config.engine = parsed.engine;
+                if (parsed.defaultDir) config.defaultDir = parsed.defaultDir;
                 else if (parsed.apiKey || parsed.baseUrl) config.engine = 'ai';
                 return true;
             } catch (error) {

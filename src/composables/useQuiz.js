@@ -11,7 +11,8 @@ export const useQuiz = (wordList, speak, showQuizSetup) => {
         answered: false,
         isCorrect: false,
         score: 0,
-        finished: false
+        finished: false,
+        isFlipped: false
     });
 
     const quizInput = ref(null);
@@ -21,12 +22,16 @@ export const useQuiz = (wordList, speak, showQuizSetup) => {
         quiz.userInput = '';
         quiz.answered = false;
         quiz.isCorrect = false;
-        nextTick(() => quizInput.value?.focus());
+        quiz.isFlipped = false;
+        nextTick(() => {
+             if (quiz.mode !== 'flashcard') quizInput.value?.focus();
+        });
     };
 
-    const startQuiz = (mode) => {
-        if (!wordList.value.length) {
-            alert('先添加一些单词吧！');
+    const startQuiz = (mode, customList = null) => {
+        const sourceList = customList || wordList.value;
+        if (!sourceList.length) {
+            alert('列表为空，无法开始');
             return;
         }
         showQuizSetup.value = false;
@@ -36,14 +41,39 @@ export const useQuiz = (wordList, speak, showQuizSetup) => {
         quiz.score = 0;
         quiz.currentIdx = 0;
 
-        const shuffled = [...wordList.value].sort(() => 0.5 - Math.random());
-        quiz.list = shuffled.slice(0, Math.min(20, shuffled.length));
+        const shuffled = [...sourceList].sort(() => 0.5 - Math.random());
+        // For standard quiz, limit to 20. For flashcard, maybe allow all? 
+        // Or keep limit to 20/50 to avoid fatigue. Let's keep 20 for now or user setting.
+        // User asked "dictate all words in list", implies maybe no limit?
+        // Let's cap at 50 for "All Words" mode to prevent infinite sessions, or just use all.
+        // If "customList" is passed (likely All Words), use all of them or a larger chunk.
+        const limit = customList ? 100 : 20; 
+        quiz.list = shuffled.slice(0, Math.min(limit, shuffled.length));
         loadQuestion();
     };
 
+    const flipCard = () => {
+        quiz.isFlipped = !quiz.isFlipped;
+    };
+
+    const markFlashcard = (known) => {
+        quiz.answered = true;
+        quiz.isCorrect = known;
+        if (known) {
+            quiz.score++;
+        }
+        // Small delay to show result? Or instant?
+        // Instant next question is better flow for flashcards
+        setTimeout(() => {
+            nextQuestion();
+        }, 200);
+    };
+
     const checkAnswer = () => {
+        if (quiz.mode === 'flashcard') return; 
         if (!quiz.userInput.trim()) return;
         quiz.answered = true;
+// ... existing checkAnswer logic
 
         const input = quiz.userInput.trim().toLowerCase();
         const target = quiz.mode === 'zh2en'
@@ -96,5 +126,5 @@ export const useQuiz = (wordList, speak, showQuizSetup) => {
         }
     };
 
-    return { quiz, quizInput, startQuiz, checkAnswer, nextQuestion, exitQuiz, inputStatusClass, getQuizHint };
+    return { quiz, quizInput, startQuiz, checkAnswer, nextQuestion, exitQuiz, inputStatusClass, getQuizHint, flipCard, markFlashcard };
 };
