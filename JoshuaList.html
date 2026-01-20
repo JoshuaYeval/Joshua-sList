@@ -602,7 +602,7 @@
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
                 <h3 class="text-xl font-bold mb-2">选择测试模式</h3>
-                <p class="jl-muted text-sm mb-6">本次测试将包含 {{ config.useAllLists ? '所有列表中的单词' : (Math.min(20, filteredList.length) + ' 个随机单词') }}</p>
+                <p class="jl-muted text-sm mb-6">本次测试将包含 {{ config.useAllLists ? '所有列表中的单词' : (filteredList.length + ' 个单词') }}</p>
 
                 <div class="mb-4 text-left p-3 rounded-lg border jl-border bg-black/5 dark:bg-white/5">
                     <label class="flex items-center cursor-pointer gap-2 select-none">

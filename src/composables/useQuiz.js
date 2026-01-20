@@ -42,13 +42,8 @@ export const useQuiz = (wordList, speak, showQuizSetup) => {
         quiz.currentIdx = 0;
 
         const shuffled = [...sourceList].sort(() => 0.5 - Math.random());
-        // For standard quiz, limit to 20. For flashcard, maybe allow all? 
-        // Or keep limit to 20/50 to avoid fatigue. Let's keep 20 for now or user setting.
-        // User asked "dictate all words in list", implies maybe no limit?
-        // Let's cap at 50 for "All Words" mode to prevent infinite sessions, or just use all.
-        // If "customList" is passed (likely All Words), use all of them or a larger chunk.
-        const limit = customList ? 100 : 20; 
-        quiz.list = shuffled.slice(0, Math.min(limit, shuffled.length));
+        // User requested full list for every test
+        quiz.list = shuffled;
         loadQuestion();
     };
 
