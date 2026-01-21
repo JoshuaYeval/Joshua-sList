@@ -387,16 +387,23 @@ export const useWordbook = () => {
         aiFillProgress.total = targets.length;
         aiFillProgress.current = 0;
 
-        for (let i = 0; i < targets.length; i++) {
-            const word = targets[i];
-            aiFillProgress.current = i + 1;
-            aiFillProgress.message = `正在处理: ${word.english}`;
+        // Batch processing to reduce API calls
+        const BATCH_SIZE = 10;
+        const batches = [];
+        for (let i = 0; i < targets.length; i += BATCH_SIZE) {
+            batches.push(targets.slice(i, i + BATCH_SIZE));
+        }
+
+        for (const batch of batches) {
+            aiFillProgress.message = `正在批量处理 ${batch.map(w => w.english).join(', ')}...`;
             try {
-                await fillWordWithAI(word);
-                await sleep(200);
+                await fillBatchWithAI(batch);
+                // Rate limit protection
+                await sleep(500); 
             } catch (error) {
-                console.error('AI 补充失败:', error);
+                console.error('AI 批量处理失败:', error);
             }
+            aiFillProgress.current += batch.length;
         }
 
         setTimeout(() => {
@@ -406,23 +413,23 @@ export const useWordbook = () => {
         }, 400);
     };
 
-    const fillWordWithAI = async (word) => {
-        const english = word.english.trim();
-        const needsChinese = !word.chinese || !word.chinese.trim();
-        const needsPos = !isPhrase(english) && (!word.pos || !word.pos.trim());
-        const needsExample = !word.example || !word.example.trim();
-        if (!needsChinese && !needsPos && !needsExample) return;
+    const fillBatchWithAI = async (words) => {
+        const payload = words.map(w => ({
+            id: w.id,
+            english: w.english,
+            context: `${w.pos||''} ${w.chinese||''} ${w.example||''}`.trim()
+        }));
 
         const prompt = [
-            'For the English input, output ONLY valid JSON (no markdown).',
+            'You are a vocabulary assistant. Output ONLY valid JSON array (no markdown).',
+            'Task: Complete missing fields for the following words.',
             'Rules:',
-            '- "pos" must be one of ["n.","v.","adj.","adv.","pron.","prep.","conj"] or "" when it is a phrase.',
-            '- "meaning" must be a concise Simplified Chinese meaning.',
-            '- "example" must be a short English sentence using the input.',
-            '- Only fill missing fields, keep existing values.',
-            `Current data: {"pos":"${word.pos || ''}","meaning":"${word.chinese || ''}","example":"${word.example || ''}"}`,
-            'Return format: {"pos":"","meaning":"","example":""}',
-            `Input: "${english}"`
+            '- "pos": n./v./adj./adv./pron./prep./conj. or "" if phrase (has spaces).',
+            '- "meaning": Concise Simplified Chinese meaning.',
+            '- "example": Short English sentence containing the word.',
+            '- Use existing data if available/correct, otherwise generate.',
+            'Return format: [{"id":"...","pos":"...","meaning":"...","example":"..."}, ...]',
+            `Input Array: ${JSON.stringify(payload)}`
         ].join('\n');
 
         const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/chat/completions';
@@ -443,15 +450,30 @@ export const useWordbook = () => {
 
         try {
             const raw = data?.choices?.[0]?.message?.content || '';
-            const json = JSON.parse(raw.replace(/```json|```/g, '').trim());
+            const cleanRaw = raw.replace(/```json|```/g, '').trim();
+            let jsonArray = JSON.parse(cleanRaw);
+            
+            if (!Array.isArray(jsonArray)) {
+                // formatting fallback?
+                console.warn('AI did not return an array');
+                return;
+            }
 
-            if (needsChinese && json.meaning) word.chinese = json.meaning;
-            if (needsExample && json.example) word.example = json.example;
-            if (needsPos && json.pos) word.pos = normalizePos(json.pos);
+            for (const item of jsonArray) {
+                const targetWord = words.find(w => w.id === item.id);
+                if (targetWord) {
+                    if (item.meaning && (!targetWord.chinese || !targetWord.chinese.trim())) targetWord.chinese = item.meaning;
+                    if (item.example && (!targetWord.example || !targetWord.example.trim())) targetWord.example = item.example;
+                    if (item.pos && !isPhrase(targetWord.english) && (!targetWord.pos || !targetWord.pos.trim())) targetWord.pos = normalizePos(item.pos);
+                }
+            }
         } catch (error) {
             console.error('无法解析 AI 响应', error);
         }
     };
+    
+    // Kept for single manual translation if needed, but not used by bulk
+    const fillWordWithAI = async (word) => { return fillBatchWithAI([word]); };
 
     const startQuizSetup = () => {
         if (!wordList.value.length) {

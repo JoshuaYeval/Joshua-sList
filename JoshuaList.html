@@ -237,7 +237,7 @@
                                 </div>
 
                                 <!-- Input Area -->
-                                <div class="relative max-w-md mx-auto">
+                                <div class="relative max-w-md mx-auto w-full">
                                     <template v-if="quiz.mode === 'flashcard'">
                                         <div v-if="quiz.isFlipped" class="grid grid-cols-2 gap-4 mt-8 animate-fade-in-up">
                                             <button @click="markFlashcard(false)" class="py-4 rounded-xl bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 hover:brightness-95 transition font-bold shadow-sm">
@@ -250,6 +250,22 @@
                                         <div v-else class="h-20"></div> <!-- Placeholder -->
                                     </template>
                                     
+                                    <template v-else-if="quiz.mode === 'en2zh-choice'">
+                                        <div class="grid grid-cols-1 gap-3 w-full animate-fade-in-up">
+                                             <button v-for="choice in quiz.currentChoices" :key="choice.id"
+                                                @click="!quiz.answered && checkAnswer(choice)"
+                                                class="w-full p-4 rounded-xl border-2 text-left transition relative overflow-hidden flex items-center gap-3 jl-surface-soft"
+                                                :class="getChoiceClass(choice)">
+                                                <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0" 
+                                                    :class="getChoiceClass(choice).includes('border-green') ? 'border-green-600 text-green-600' : (getChoiceClass(choice).includes('border-red') ? 'border-red-600 text-red-600' : 'border-gray-400 opacity-50')">
+                                                    <i v-if="getChoiceClass(choice).includes('border-green')" class="fa-solid fa-check text-xs"></i>
+                                                    <i v-else-if="getChoiceClass(choice).includes('border-red')" class="fa-solid fa-xmark text-xs"></i>
+                                                </div>
+                                                <div class="font-medium text-sm md:text-base">{{ choice.chinese || choice.english }}</div>
+                                             </button>
+                                        </div>
+                                    </template>
+
                                     <template v-else>
                                         <input
                                             v-model="quiz.userInput"
@@ -643,6 +659,15 @@
                             <div class="text-xs jl-muted">看英文，写中文</div>
                         </div>
                         <i class="fa-solid fa-language text-black/20 dark:text-white/30 group-hover:text-primary"></i>
+                    </button>
+
+                    <button @click="startQuiz('en2zh-choice')"
+                        class="w-full p-4 border rounded-xl hover:border-primary transition group flex items-center justify-between jl-surface-soft jl-border">
+                        <div class="text-left">
+                            <div class="font-bold group-hover:text-primary">选择题模式</div>
+                            <div class="text-xs jl-muted">看英文，选中文 (Multiple Choice)</div>
+                        </div>
+                        <i class="fa-solid fa-list-check text-black/20 dark:text-white/30 group-hover:text-primary"></i>
                     </button>
                 </div>
             </div>

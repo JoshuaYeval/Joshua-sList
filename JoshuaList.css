@@ -80,15 +80,15 @@ body[theme-mode="light"] {
     --jl-surface: hsl(51, 24%, 95%); /* 温暖的米色/麦秆黄 */
     --jl-surface-soft: hsl(40, 23%, 98%); /* 极浅米黄 */
     --jl-card: #FFFFFF;
-    --jl-border: rgba(135, 134, 127, 0.4); /* #87867F40 */
+    --jl-border: rgba(135, 134, 127, 0.6); /* 加深边框颜色以增强对比 */
     --jl-text: hsl(49, 19.6%, 13.3%); /* 深色文字 */
-    --jl-muted: hsl(47, 15%, 45%); /* 深橄榄褐色减淡 */
+    --jl-muted: hsl(47, 20%, 35%); /* 加深静音文字颜色，提高可读性 */
     --jl-input-bg: #FFFFFF;
     --jl-code-bg: rgba(61, 57, 41, 0.05); /* #3D39290D */
     --jl-code-text: #7C1B13; /* 砖红褐色 */
     --jl-pre-code-text: var(--jl-text);
     --jl-chip-bg: #FFFFFF;
-    --jl-chip-hover: hsl(40, 23%, 98%);
+    --jl-chip-hover: hsl(40, 30%, 94%); /* 加深悬停背景 */
 }
 
 body {
